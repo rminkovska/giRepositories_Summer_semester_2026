@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 /**
  * The class {@code Vector2D} represents a two-dimensional mathematical vector.
  *
@@ -21,6 +23,27 @@ public class Vector2D {
 
         this.x = x;
         this.y = y;
+    }
+
+    public boolean equals(Object o){
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vector2D vector = (Vector2D) o;
+        if (Double.compare(vector.x, x) != 0) return false;
+        if (Double.compare(vector.y, y) != 0) return false;
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = (int) (temp ^ (temp >>> 32));
+
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+
+        return result;
     }
 
     /**

@@ -1,0 +1,65 @@
+/**
+ * Associative data structure mapping {@link Physical} keys
+ * to {@link Physical} values.
+ *
+ * <p>Keys are compared using {@link Physical#equals(Object)}.
+ * Two keys represent the same key iff they are equal according to
+ * {@code equals}.</p>
+ *
+ * <p>If a new association is inserted for an already existing key,
+ * the previous associated value is replaced.</p>
+ *
+ * PLEASE DO NOT CHANGE THIS FILE
+ */
+public interface PhysicalPhysicalMap {
+
+    /**
+     * Associates the specified value with the specified key.
+     *
+     * <p>If an equal key already exists, its associated value is replaced.</p>
+     *
+     * @param key the key; {@code key != null}
+     * @param value the value; {@code value != null}
+     * @return the previously associated value, or {@code null} if none existed
+     */
+    Physical put(Physical key, Physical value);
+
+    /**
+     * Returns the value associated with the specified key.
+     *
+     * <p>If this map contains a key equal to {@code key},
+     * the associated value is returned.</p>
+     *
+     * @param key the key; {@code key != null}
+     * @return the associated value, or {@code null} if the key is not present
+     */
+    Physical get(Physical key);
+
+    /**
+     * Returns whether this map contains a key equal to the specified key
+     * (according to {@code equals}).
+     *
+     * @param key the key; {@code key != null}
+     * @return {@code true} if the key exists, otherwise {@code false}
+     */
+    boolean containsKey(Physical key);
+
+    /**
+     * Returns the number of associations currently stored in this map.
+     *
+     * @return the number of key-value associations
+     */
+    int size();
+
+    /**
+     * Returns whether this map contains no associations.
+     *
+     * @return {@code true} if this map is empty, otherwise {@code false}
+     */
+    boolean isEmpty();
+
+    /**
+     * Removes all associations from this map.
+     */
+    void clear();
+}

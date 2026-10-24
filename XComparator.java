@@ -15,23 +15,18 @@
  * <p>Example ordering:
  * (1.0, 2.0) &lt; (1.0, 3.0) &lt; (2.0, 0.0)</p>
  */
-public class XComparator implements PhysicalComparator // TODO: activate clause.
+public class XComparator implements PhysicalComparator
 {
-    //TODO: define missing parts of this class.
-    public int compare(Physical a, Physical b) {
-        if (a.getPosition().getX() == b.getPosition().getX()) {
-            if (a.getPosition().getY() == b.getPosition().getY()) {
-                return 0;
-            } else if (a.getPosition().getY() < b.getPosition().getY()) {
-                return -1;
-            } else if (a.getPosition().getY() > b.getPosition().getY()) {
-                return 1;
-            }
-        }
-        else if (a.getPosition().getX() < b.getPosition().getX()) {
-            return -1;
-        }
-        return 1;
-    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compare(Physical a, Physical b) {
+        int cmpX = Double.compare(a.getPosition().getX(), b.getPosition().getX());
+        if (cmpX != 0) {
+            return cmpX;
+        }
+        return Double.compare(a.getPosition().getY(), b.getPosition().getY());
+    }
 }
