@@ -113,33 +113,4 @@ public interface Physical {
         return position.distanceTo(this.getPosition())
                 <= radius + this.getRadius();
     }
-
-
-    /**
-     * Returns whether this physical object is equal to the specified object.
-     *
-     * <p>Two physical objects are considered equal iff</p>
-     * <ul>
-     *   <li>they have the same runtime type,</li>
-     *   <li>their center positions have equal x- and y-coordinates, and</li>
-     *   <li>they have equal radii.</li>
-     * </ul>
-     *
-     * <p>Thus two distinct objects may be equal if they describe the same
-     * geometric physical object.</p>
-     *
-     * @param o the object to compare with
-     * @return {@code true} iff this object is equal to {@code o}
-     */
-    @Override
-    boolean equals(Object o);
-
-    /**
-     * Returns a hash code consistent with the definition of equality.
-     *
-     * @return a hash code for this object
-     */
-    @Override
-    int hashCode();
-
 }

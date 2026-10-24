@@ -1,13 +1,10 @@
-import java.util.Random;
+import java.util.*;
 
 /**
  * Single ant agent.
- * <p>
- * An ant moves through the world by combining its current direction,
- * a random turn, and a weak attraction towards its current target.
- * <p>
- * If it is not carrying food, the target is the food source.
- * If it is carrying food, the target is the nest.
+ *
+ * <p>An ant moves through the world by combining its current direction,
+ * a random turn, and a weak attraction towards its current target.</p>
  */
 public class Ant implements Physical, Steppable {
 
@@ -16,147 +13,123 @@ public class Ant implements Physical, Steppable {
 
     private State state;
     private boolean carryingFood;
-
     private final World world;
 
     /**
      * Creates a new ant at the position of the nest of the specified world.
      *
-     * @param world the simulation world the ant operates in; {@code world != null}
+     * @param world the simulation world; {@code world != null}
      */
     public Ant(World world) {
-        this.state = new State(world.getNest().getPosition(), randomDirection());
         this.world = world;
+        this.state = new State(world.getNest().getPosition(), randomDirection());
         this.carryingFood = false;
-    }
-
-    /**
-     * Returns the current position of the ant.
-     *
-     * @return the current position
-     */
-    @Override
-    public Vector2D getPosition() {
-        return state.getPosition();
-    }
-
-    /**
-     * Returns the radius of the ant.
-     *
-     * @return the radius
-     */
-    @Override
-    public double getRadius() {
-        return RADIUS;
-    }
-
-    /**
-     * Indicates whether the ant is currently carrying food.
-     *
-     * @return {@code true} if this ant is carrying food, otherwise {@code false}
-     */
-    public boolean isCarryingFood() {
-        return carryingFood;
     }
 
     /**
      * Performs one simulation step.
      *
-     * <p>The ant moves by combining:</p>
-     * <ul>
-     *   <li>part of its previous direction,</li>
-     *   <li>a random turn,</li>
-     *   <li>and a weak attraction toward its current target.</li>
-     * </ul>
-     *
-     * <p>If the ant is not carrying food, the target is the food source.
-     * If the ant is carrying food, the target is the nest.</p>
-     *
-     * <p>Hint: You may use the implementation from AB2.1 as a starting point
-     * and adapt it accordingly.</p>
+     * @throws UnresolvedCollisionException if this ant cannot resolve a
+     *         collision within the maximum number of correction attempts
      */
     @Override
-    public void step() {
+    public void step() throws UnresolvedCollisionException {
 
-        //TODO: implement method.
-        if (world.getPhysicals() == null) {
-            return;
-        }
+        //TODO: adapt method according to `angabe.md` if needed.
 
         Physical target = carryingFood ? world.getNest() : world.getFood();
 
-        Vector2D randomTurn = randomDirection().scale(0.35);
-        Vector2D directionToTarget = subtract(target.getPosition(), state.getPosition());
-        directionToTarget = directionToTarget.normalize().scale(0.05);
-        Vector2D newDirection = state.getVelocity().scale(0.5).add(randomTurn).add(directionToTarget).normalize();
+        Vector2D randomTurn = randomDirection().scale(0.30);
+
+        Vector2D directionToTarget = target.getPosition()
+                .subtract(state.getPosition())
+                .normalize()
+                .scale(0.10);
+
+        Vector2D newDirection = state.getVelocity()
+                .scale(0.60)
+                .add(randomTurn)
+                .add(directionToTarget);
+
+        if (newDirection.isZero()) {
+            newDirection = randomDirection();
+        } else {
+            newDirection = newDirection.normalize();
+        }
 
         Vector2D nextPosition = state.getPosition().add(newDirection);
+
         nextPosition = avoidIntersections(nextPosition, target);
 
         state = world.enforceBoundary(new State(nextPosition, newDirection));
 
-        if (!carryingFood && world.getFood().intersects(state.getPosition(), getRadius())) {
+        List<UnresolvedCollisionException> collisions = new ArrayList<>();
+        try {
+            this.step();
+        } catch (UnresolvedCollisionException e) {
+            collisions.add(e);
+        }
+
+        if (!carryingFood && this.intersects(world.getFood())) {
             carryingFood = true;
-        } else if (carryingFood && world.getNest().intersects(state.getPosition(), getRadius())) {
+        } else if (carryingFood && this.intersects(world.getNest())) {
             carryingFood = false;
         }
     }
 
-    private Vector2D subtract(Vector2D a, Vector2D b) {
-        return new Vector2D(a.getX() - b.getX(), a.getY() - b.getY());
-    }
-
-    // ---- private helper methods ----
-
     /**
      * Adjusts the specified candidate position so that this ant does not overlap
      * with blocking physical objects in the world.
-     * <p>
-     * The current target may be intersected.
+     *
+     * <p>The current target may be intersected. If no valid position can be
+     * found within the maximum number of correction attempts, an
+     * {@link UnresolvedCollisionException} is thrown.</p>
      *
      * @param candidatePosition the intended next position
-     * @param allowedTarget     the object that may be intersected
+     * @param allowedTarget the object that may be intersected
      * @return a corrected position
+     * @throws UnresolvedCollisionException if the collision cannot be resolved
      */
-    private Vector2D avoidIntersections(Vector2D candidatePosition, Physical allowedTarget) {
+    private Vector2D avoidIntersections(
+            Vector2D candidatePosition,
+            Physical allowedTarget) throws UnresolvedCollisionException {
+
+        //TODO: adapt method according to `angabe.md`.
 
         Vector2D adjusted = candidatePosition;
         int safetyCounter = 0;
-        int maxCorrections = 200;
+        int maxCorrections = 500;
+        Physical lastObstacle = null;
 
         while (safetyCounter < maxCorrections) {
             Physical collision = firstBlockingIntersection(adjusted, allowedTarget);
-
             if (collision == null) {
                 return adjusted;
             }
+
+            lastObstacle = collision;
 
             adjusted = moveOutside(adjusted, collision);
             adjusted = world.enforceBoundary(
                     new State(adjusted, state.getVelocity())
             ).getPosition();
-
             safetyCounter++;
+        }
+
+        if (safetyCounter >= maxCorrections) {
+            throw new UnresolvedCollisionException(world.getCurrentStep(), this, lastObstacle);
         }
 
         return adjusted;
     }
 
-    /**
-     * Returns the first blocking physical object for the specified position.
-     * <p>
-     * The current target is allowed to be intersected.
-     *
-     * @param position      the candidate position
-     * @param allowedTarget the target that is allowed to be touched
-     * @return the first blocking intersecting object, or {@code null} if none exists
-     */
-    private Physical firstBlockingIntersection(Vector2D position, Physical allowedTarget) {
+    private Physical firstBlockingIntersection(
+            Vector2D position,
+            Physical allowedTarget) {
 
-        Physical[] physicals = world.getPhysicals();
+        Collection<Physical> physicals = world.getPhysicals();
 
-        for (int i = 0; i < physicals.length; i++) {
-            Physical other = physicals[i];
+        for (Physical other: physicals) {
 
             if (other == null || other == this || other == allowedTarget) {
                 continue;
@@ -170,14 +143,6 @@ public class Ant implements Physical, Steppable {
         return null;
     }
 
-    /**
-     * Moves the specified intersecting position to a nearby position outside the
-     * specified physical object.
-     *
-     * @param position the intersecting position
-     * @param other    the physical object causing the overlap
-     * @return a corrected position outside {@code other}
-     */
     private Vector2D moveOutside(Vector2D position, Physical other) {
 
         Vector2D center = other.getPosition();
@@ -193,11 +158,6 @@ public class Ant implements Physical, Steppable {
         return center.add(direction.scale(distance));
     }
 
-    /**
-     * Returns a normalized random vector.
-     *
-     * @return a normalized random vector
-     */
     private static Vector2D randomDirection() {
         Vector2D v;
 
@@ -206,5 +166,19 @@ public class Ant implements Physical, Steppable {
         } while (v.isZero());
 
         return v.normalize();
+    }
+
+    public boolean isCarryingFood() {
+        return carryingFood;
+    }
+
+    @Override
+    public Vector2D getPosition() {
+        return state.getPosition();
+    }
+
+    @Override
+    public double getRadius() {
+        return RADIUS;
     }
 }

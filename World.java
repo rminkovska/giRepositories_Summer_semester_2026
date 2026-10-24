@@ -1,48 +1,120 @@
+import java.util.*;
+
 /**
- * Simulation world containing nest, food location, ants and obstacles.
+ * Simulation world containing nest, food location and ants.
  *
  * <p>The world is represented as a two-dimensional coordinate system.
- * It provides access to all physical objects currently present in the world
- * and applies the boundary rule to states.</p>
+ * It provides access to all physical objects currently present in the world,
+ * applies the boundary rule to states, and performs complete simulation
+ * steps.</p>
+ *
+ * <p>This version of the world validates whether physical objects lie inside
+ * the world. If unresolved collisions occur during a simulation step, they are
+ * collected and reported by a {@link SimulationStepException}.</p>
  */
-public class World {
+public class World implements Steppable {
 
-    private final int width;
-    private final int height;
-    private final Nest nest;
-    private final FoodSource food;
-    private final Ant[] ants;
-    private final Obstacle[] obstacles;
+    //TODO: edit according to `angabe.md`.
 
+    private int width;
+    private int height;
+    private Nest nest;
+    private FoodSource food;
+    private int currentStep;
+
+    private int numberOfAnts;
+    private ArrayList<Ant> ants;
+
+    private Map<Ant, Double> distances = new HashMap<>();
     /**
-     * Creates a new {@code World} object with the specified width, height,
-     * nest, food source, ant array and obstacle array.
+     * Creates a new {@code World} object with {@code numberOfAnts} ants that will be generated at the nest position.
      *
-     * @param width the width of the world; {@code width > 0}
-     * @param height the height of the world; {@code height > 0}
-     * @param nest the nest; {@code nest != null}
-     * @param food the food source; {@code food != null}
-     * @param ants the array used to store the ants of this world;
-     *             {@code ants != null && ants.length > 0}
-     * @param obstacles the obstacles of this world; {@code obstacles != null}
+     * @param width        the width of the world; {@code width > 0}
+     * @param height       the height of the world; {@code height > 0}
+     * @param numberOfAnts the number of ants in this world; {@code numberOfAnts > 0}
+     * @param nest         the nest; {@code nest != null}
+     * @param food         the food source; {@code food != null}
+     * @throws IllegalArgumentException if at least one physical object does
+     *                                  not lie completely inside the world boundaries
      */
-    public World(int width, int height, Nest nest, FoodSource food, Ant[] ants, Obstacle[] obstacles) {
+    public World(
+            int width,
+            int height,
+            int numberOfAnts,
+            Nest nest,
+            FoodSource food) {
+
+        //TODO: validate input data.
+        //TODO: initialize additional variables.
 
         this.width = width;
         this.height = height;
         this.nest = nest;
         this.food = food;
-        this.ants = ants;
-        this.obstacles = obstacles;
+        this.currentStep = 0;
+        this.numberOfAnts = numberOfAnts;
+
+        if(this == null){
+            throw new IllegalArgumentException("World cannot be null");
+        }
+
+        if (width <= 0 || height <= 0 || numberOfAnts <= 0 || nest == null || food == null) {
+            throw new IllegalArgumentException("Out of boundaries");
+        }
+        this.ants = new ArrayList<>();
+        for (int i = 0; i < numberOfAnts; i++) {
+            ants.add(new Ant(this));
+        }
+
+        if (!isInsideWorld(food)) {
+            throw new IllegalArgumentException("Food is not inside world");
+        }
+        if (!isInsideWorld(nest)) {
+            throw new IllegalArgumentException("Nest is not inside world");
+        }
     }
 
     /**
-     * Returns the position of the nest object.
+     * Performs one complete simulation step of this  world.
+     *
+     * <p>The method increments the simulation step counter and invokes
+     * {@link Ant#step()} for all ants stored in this world.</p>
+     *
+     * <p>If one or more ants throw an {@link UnresolvedCollisionException},
+     * these exceptions are collected. After all ants have been processed, a
+     * {@link SimulationStepException} containing all collected exceptions is
+     * thrown.</p>
+     *
+     * @throws SimulationStepException if at least one unresolved collision
+     *                                 occurred during this simulation step
+     */
+    @Override
+    public void step() throws SimulationStepException {
+
+        //TODO: implement method.
+        this.currentStep++;
+        List<UnresolvedCollisionException> collisions = new ArrayList<>();
+        for (Ant ant : ants) {
+            try {
+                ant.step();
+                double currentDistance = distances.get(ant);
+                distances.put(ant, currentDistance + 1);
+            } catch (UnresolvedCollisionException e) {
+                collisions.add(e);
+            }
+        }
+        if (!collisions.isEmpty()) {
+            throw new SimulationStepException(currentStep, collisions);
+        }
+
+    }
+
+    /**
+     * Returns the nest object.
      *
      * @return the nest
      */
     public Nest getNest() {
-
         return nest;
     }
 
@@ -52,65 +124,61 @@ public class World {
      * @return the food source
      */
     public FoodSource getFood() {
-
         return food;
     }
 
     /**
-     * Returns the ant array used by this world.
+     * Returns an independent (copy) collection of the ants of this world.
      *
      * @return the ants
      */
-    public Ant[] getAnts() {
+    public Collection<Ant> getAnts() {
 
-        return ants;
+        //TODO: implement method.
+        return new ArrayList<>(this.ants);
     }
 
     /**
-     * Returns all physical objects currently present in the world.
+     * Returns all physical objects currently present in this world.
      *
-     * <p>The returned array contains
-     * <ul>
-     *   <li>the nest,</li>
-     *   <li>the food source,</li>
-     *   <li>all non-{@code null} obstacles, and</li>
-     *   <li>all non-{@code null} ants.</li>
-     * </ul>
-     * Each non-{@code null} physical object appears exactly once.</p>
+     * <p>The returned collection contains the nest, the food source, and all
+     * ants. Each object occurs at most once.</p>
      *
-     * <p>The returned array is independent of the internal representation of
-     * this world. Changes to the returned array do not affect {@code this}.</p>
+     * <p>The order of the returned collection is unspecified.</p>
      *
-     * @return an array containing all physical objects in this world
+     * @return a collection containing all physical objects in this world
      */
-    public Physical[] getPhysicals() {
+    public Collection<Physical> getPhysicals() {
 
         //TODO: implement method.
-        int i=0;
-        int size = 2; //beginning with 2 for nest and food
-        for (Obstacle obstacle : obstacles) {
-            if(obstacle!=null) size++;
-        }
-        for(Ant ant : ants){
-            if(ant!=null) size++;
-        }
-        Physical[] physicals = new Physical[size];
-
-        physicals[i++]= nest;
-        physicals[i++]= food;
-
-        for(Obstacle obstacle : obstacles) {
-            if(obstacle!=null){
-                physicals[i++]= (Physical) obstacle;
-            }
-        }
-        for(Ant ant : ants) {
-            if(ant!=null){
-                physicals[i++]= ant;
-            }
-        }
-
+        ArrayList<Physical> physicals = new ArrayList<>();
+        physicals.add(this.nest);
+        physicals.add(this.food);
+        physicals.addAll(this.ants);
         return physicals;
+    }
+
+    /**
+     * Returns the total distances travelled by the ants of this world.
+     *
+     * <p>The returned map associates every ant currently known to this world
+     * with the total distance travelled by that ant.</p>
+     *
+     * <p>The choice of the concrete map implementation is unspecified.</p>
+     *
+     * <p>The returned map is independent of the internal representation of
+     * this world. Structural modifications of the returned map, such as adding,
+     * removing or replacing entries, do not affect this world.</p>
+     *
+     * <p>The contained objects themselves are not copied.</p>
+     *
+     * @return a map associating each ant with its total travelled distance
+     */
+    public Map<Ant, Double> getTravelledDistances() {
+
+        //TODO: implement method.
+        return new  HashMap<>(distances);
+
     }
 
     /**
@@ -156,11 +224,13 @@ public class World {
         if (bouncedX) {
             vx = -vx;
         }
+
         if (bouncedY) {
             vy = -vy;
         }
 
         Vector2D newVelocity = new Vector2D(vx, vy);
+
         if (newVelocity.isZero()) {
             newVelocity = new Vector2D(1, 0);
         } else {
@@ -168,5 +238,33 @@ public class World {
         }
 
         return new State(new Vector2D(x, y), newVelocity);
+    }
+
+    /**
+     * Returns the current simulation step.
+     *
+     * @return the current simulation step
+     */
+    public int getCurrentStep() {
+
+        return currentStep;
+    }
+
+    /**
+     * Returns whether the specified physical object lies completely inside
+     * the world boundaries.
+     *
+     * @param p the physical object; {@code p != null}
+     * @return {@code true} iff {@code p} lies completely inside the world
+     */
+    private boolean isInsideWorld(Physical p) {
+
+        Vector2D position = p.getPosition();
+        double radius = p.getRadius();
+
+        return position.getX() - radius >= 0
+                && position.getX() + radius <= width
+                && position.getY() - radius >= 0
+                && position.getY() + radius <= height;
     }
 }

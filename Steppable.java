@@ -19,6 +19,9 @@ public interface Steppable {
      *
      * <p>This method updates the internal state of the object by one discrete
      * time step.</p>
+     *
+     * @throws StepException if the simulation step cannot be completed
+     * successfully
      */
-    void step();
+    void step() throws StepException;
 }

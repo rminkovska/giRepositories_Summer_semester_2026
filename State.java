@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * Immutable value object representing the kinematic state of an object.
  *
@@ -50,5 +52,33 @@ public class State {
     public Vector2D getVelocity() {
 
         return velocity;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof State)) {
+            return false;
+        }
+
+        State state = (State) o;
+
+        return Objects.equals(position, state.position)
+                && Objects.equals(velocity, state.velocity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, velocity);
     }
 }
