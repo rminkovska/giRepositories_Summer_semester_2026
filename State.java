@@ -1,6 +1,6 @@
 /**
- * Immutable value object representing the kinematic state of a bird.
- * <p>
+ * Immutable value object representing the kinematic state of an object.
+ *
  * A {@code State} consists of:
  * <ul>
  *   <li>a position vector</li>
@@ -12,7 +12,7 @@
  * cannot be changed. Any modification of a bird's movement must be
  * expressed by creating a new {@code State} instance.
  * </p>
- * <p>
+ *
  * Please do not change this file!
  */
 public class State {
