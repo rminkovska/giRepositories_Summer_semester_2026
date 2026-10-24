@@ -1,0 +1,40 @@
+/**
+ * A comparator for {@link Physical} objects.
+ *
+ * <p>This interface defines a total ordering on {@code Physical} objects.
+ * It can be used to compare two objects based on their geometric properties
+ * such as position or radius.</p>
+ *
+ * <p>The comparison must be consistent and transitive. That is, for all
+ * {@code a}, {@code b}, and {@code c}:</p>
+ * <ul>
+ *   <li>{@code compare(a, b) < 0} implies {@code a} is considered less than {@code b}</li>
+ *   <li>{@code compare(a, b) == 0} implies {@code a} and {@code b} are considered equal
+ *       with respect to this ordering</li>
+ *   <li>{@code compare(a, b) > 0} implies {@code a} is considered greater than {@code b}</li>
+ *   <li>If {@code compare(a, b) > 0} and {@code compare(b, c) > 0}, then
+ *       {@code compare(a, c) > 0}</li>
+ * </ul>
+ *
+ * <p>Typical implementations may order {@code Physical} objects by their
+ * x-coordinate, y-coordinate, radius, or combinations thereof.</p>
+ */
+public interface PhysicalComparator {
+
+    /**
+     * Compares the two specified {@code Physical} objects.
+     *
+     * <p>The returned integer indicates the ordering of the arguments:</p>
+     * <ul>
+     *   <li>a negative value if {@code a < b}</li>
+     *   <li>{@code 0} if {@code a} and {@code b} are considered equal</li>
+     *   <li>a positive value if {@code a > b}</li>
+     * </ul>
+     *
+     * @param a the first object; {@code a != null}
+     * @param b the second object; {@code b != null}
+     * @return a negative integer, zero, or a positive integer as {@code a}
+     *         is less than, equal to, or greater than {@code b}
+     */
+    int compare(Physical a, Physical b);
+}

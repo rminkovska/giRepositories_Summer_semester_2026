@@ -44,6 +44,24 @@ public interface Physical {
     double getRadius();
 
     /**
+     * Returns whether this object fully contains the specified physical object.
+     *
+     * <p>This is the case if the entire circle of {@code other} lies inside or on
+     * the boundary of this object. Formally, the distance between the centers plus
+     * the radius of {@code other} must be less than or equal to the radius of this object.</p>
+     *
+     * @param other the other physical object; {@code other != null}
+     * @return {@code true} if {@code other} is fully contained in {@code this},
+     *         {@code false} otherwise
+     */
+    default boolean fullyContains(Physical other) {
+
+        return getPosition().distanceTo(other.getPosition())
+                + other.getRadius()
+                <= getRadius();
+    }
+
+    /**
      * Returns whether this object intersects the specified physical object.
      *
      * <p>Two physical objects intersect if the distance between their centers
@@ -56,6 +74,24 @@ public interface Physical {
 
         return getPosition().distanceTo(other.getPosition())
                 <= getRadius() + other.getRadius();
+    }
+
+    /**
+     * Returns whether this object intersects the specified physical object
+     * without one fully containing the other.
+     *
+     * <p>This is the case if the two circles overlap partially:
+     * they intersect, but neither circle lies completely inside the other.</p>
+     *
+     * @param other the other physical object; {@code other != null}
+     * @return {@code true} if the objects intersect without full containment,
+     *         {@code false} otherwise
+     */
+    default boolean intersectsWithoutContainment(Physical other) {
+
+        return intersects(other)
+                && !fullyContains(other)
+                && !other.fullyContains(this);
     }
 
     /**

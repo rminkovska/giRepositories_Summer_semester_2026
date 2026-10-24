@@ -18,15 +18,40 @@ public class FoodSource implements Physical {
         this.radius = radius;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector2D getPosition() {
 
         return position;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getRadius() {
 
         return radius;
+    }
+
+    /**
+     * Returns a string representation of this food source.
+     *
+     * <p>The returned string contains the class name, the position of the food source,
+     * and its radius.</p>
+     *
+     * <p>Example:
+     * {@code FoodSource@(100.0, 200.0), r=3.0}</p>
+     *
+     * @return a string representation of this food source
+     */
+    @Override
+    public String toString() {
+        return "FoodSource@("
+                + getPosition().getX() + ", "
+                + getPosition().getY() + "), r="
+                + getRadius();
     }
 }

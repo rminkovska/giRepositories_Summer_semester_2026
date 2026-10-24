@@ -18,15 +18,40 @@ public class Nest implements Physical {
         this.radius = radius;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector2D getPosition() {
 
         return position;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getRadius() {
 
         return radius;
+    }
+
+    /**
+     * Returns a string representation of this nest.
+     *
+     * <p>The returned string contains the class name, the position of the nest,
+     * and its radius.</p>
+     *
+     * <p>Example:
+     * {@code Nest@(100.0, 200.0), r=12.0}</p>
+     *
+     * @return a string representation of this nest
+     */
+    @Override
+    public String toString() {
+        return "Nest@("
+                + getPosition().getX() + ", "
+                + getPosition().getY() + "), r="
+                + getRadius();
     }
 }
