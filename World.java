@@ -17,22 +17,24 @@ public class World {
      * @param height the height of the world; {@code height > 0}
      * @param nest the position of the ant nest; {@code nest != null}, coordinates have to be within world boundaries
      * @param food the position of the food source; {@code food != null}, coordinates have to be within world boundaries
-     * @param ants the queue of ants living in this world; {@code ants != null}
+     * @param ants the array used to store the ants of this world.
+     * The length of this array determines the number of ants that will live in this world;
+     * {@code ants != null && ants.length > 0}
      */
-    private int width;
-    private int height;
-    private Vector2D nest;
-    private Vector2D food;
-    private AntQueue ants;
+    int width;
+    int height;
+    Vector2D nest;
+    Vector2D food;
+    Ant[] ants;
 
-    public World(int width, int height, Vector2D nest, Vector2D food, AntQueue ants) {
+    public World(int width, int height, Vector2D nest, Vector2D food, Ant[] ants) {
+
         //TODO: implement constructor.
         this.width = width;
         this.height = height;
         this.nest = nest;
         this.food = food;
         this.ants = ants;
-
     }
 
     /**
@@ -43,7 +45,7 @@ public class World {
     public Vector2D getNest() {
 
         //TODO: implement method.
-        return this.nest;
+        return new Vector2D(nest.getX(), nest.getY());
     }
 
     /**
@@ -54,7 +56,7 @@ public class World {
     public Vector2D getFood() {
 
         //TODO: implement method.
-        return this.food;
+        return new Vector2D(food.getX(), food.getY());
     }
 
     /**
@@ -119,23 +121,23 @@ public class World {
      * {@code this} is not changed by this method.
      * </p>
      *
-     * @return a {@link Vector2DAntMap} representing the mapping
+     * @return a {@link Vector2DAntTreeMap} representing the mapping
      * from positions to ants in the world
      */
-    public Vector2DAntMap asMap() {
+    public Vector2DAntTreeMap asMap() {
 
         //TODO: implement method.
+        Vector2DAntTreeMap map = new Vector2DAntTreeMap();
 
-        Vector2DAntMap map = new Vector2DAntMap();
+        Vector2D[] position = new Vector2D[ants.length];
+        Ant[] value = new Ant[ants.length];
 
-        Vector2D[] position = new Vector2D[ants.size()];
-        Ant[] value = new Ant[ants.size()];
-
-        for (int i = 0; i < ants.size(); i++) {
-            position[i] = ants.peek().getPosition();
-            value[i] = ants.peek();
+        for (int i = 0; i < ants.length; i++) {
+            position[i] = ants[i].getPosition();
+            value[i] = ants[i];
             map.put(position[i], value[i]);
         }
+
         return map;
     }
 }

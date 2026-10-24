@@ -2,144 +2,179 @@ public class ApplicationTest {
 
     public static void main(String[] args) {
         System.out.println("===============================================");
-        System.out.println("Vector2DStack TESTS");
+        System.out.println("Vector2DSinglyLinkedList TESTS");
         System.out.println("===============================================");
 
-        Vector2DStack stack1 = new Vector2DStack();
+        Vector2DSinglyLinkedList list1 = new Vector2DSinglyLinkedList();
         Vector2D v1 = new Vector2D(1.0, 2.0);
         Vector2D v2 = new Vector2D(3.0, 4.0);
-
-        stack1.push(v1);
-        check("Vector2DStack push", 1, stack1.size());
-
-        stack1.push(v2);
-        check("Vector2DStack push second", 2, stack1.size());
-
-        Vector2D popped = stack1.pop();
-        check("Vector2DStack pop", true, popped != null);
-        check("Vector2DStack pop value", 3.0, popped.getX());
-        check("Vector2DStack pop y value", 4.0, popped.getY());
-        check("Vector2DStack size after pop", 1, stack1.size());
-
         Vector2D v3 = new Vector2D(5.0, 6.0);
         Vector2D v4 = new Vector2D(7.0, 8.0);
         Vector2D v5 = new Vector2D(9.0, 10.0);
-        stack1.push(v3);
-        stack1.push(v4);
-        stack1.push(v5);
-        check("Vector2DStack size after multiple pushes", 4, stack1.size());
 
-        Vector2D top = stack1.peek();
-        check("Vector2DStack peek", true, top != null);
-        check("Vector2DStack peek x value", 9.0, top.getX());
-        check("Vector2DStack peek y value", 10.0, top.getY());
-        check("Vector2DStack peek preserves size", 4, stack1.size());
+        check("Vector2DSinglyLinkedList initial size", 0, list1.size());
+        check("Vector2DSinglyLinkedList isEmpty on empty list", true, list1.isEmpty());
+        check("Vector2DSinglyLinkedList peekFirst on empty list", null, list1.peekFirst());
+        check("Vector2DSinglyLinkedList peekLast on empty list", null, list1.peekLast());
+        check("Vector2DSinglyLinkedList pollFirst on empty list", null, list1.pollFirst());
+        check("Vector2DSinglyLinkedList pollLast on empty list", null, list1.pollLast());
 
-        Vector2DStack expandStack = new Vector2DStack();
-        expandStack.push(new Vector2D(1.0, 1.0));
-        expandStack.push(new Vector2D(2.0, 2.0));
-        expandStack.push(new Vector2D(3.0, 3.0));
-        check("Vector2DStack capacity expansion", 3, expandStack.size());
+        list1.addFirst(v1);
+        check("Vector2DSinglyLinkedList addFirst size", 1, list1.size());
+        checkVector("Vector2DSinglyLinkedList addFirst content", v1, list1.peekFirst());
+        checkVector("Vector2DSinglyLinkedList peekLast after addFirst", v1, list1.peekLast());
 
-        check("Vector2DStack isEmpty false", false, stack1.isEmpty());
+        list1.addFirst(v2);
+        check("Vector2DSinglyLinkedList addFirst second size", 2, list1.size());
+        checkVector("Vector2DSinglyLinkedList addFirst second head", v2, list1.peekFirst());
+        checkVector("Vector2DSinglyLinkedList peekLast after second addFirst", v1, list1.peekLast());
 
-        stack1.clear();
-        check("Vector2DStack isEmpty after clear", true, stack1.isEmpty());
-        check("Vector2DStack size after clear", 0, stack1.size());
+        Vector2D polledFirst = list1.pollFirst();
+        checkVector("Vector2DSinglyLinkedList pollFirst value", v2, polledFirst);
+        check("Vector2DSinglyLinkedList size after pollFirst", 1, list1.size());
+        checkVector("Vector2DSinglyLinkedList new head after pollFirst", v1, list1.peekFirst());
 
-        System.out.println("\n===============================================");
-        System.out.println("AntQueue TESTS");
-        System.out.println("===============================================");
+        list1.addLast(v3);
+        check("Vector2DSinglyLinkedList addLast size", 2, list1.size());
+        checkVector("Vector2DSinglyLinkedList addLast head unchanged", v1, list1.peekFirst());
+        checkVector("Vector2DSinglyLinkedList addLast last", v3, list1.peekLast());
 
-        AntQueue queue1 = new AntQueue(4);
-        World world1 = new World(200, 200, new Vector2D(0, 0), new Vector2D(0, 0), queue1);
+        list1.add(1, v4); // list: v1, v4, v3
+        check("Vector2DSinglyLinkedList add(index) size", 3, list1.size());
+        checkVector("Vector2DSinglyLinkedList get(0)", v1, list1.get(0));
+        checkVector("Vector2DSinglyLinkedList get(1)", v4, list1.get(1));
+        checkVector("Vector2DSinglyLinkedList get(2)", v3, list1.get(2));
 
-        Ant a1 = new Ant(world1);
-        Ant a2 = new Ant(world1);
+        list1.add(0, v5); // list: v5, v1, v4, v3
+        check("Vector2DSinglyLinkedList add(index=0) size", 4, list1.size());
+        checkVector("Vector2DSinglyLinkedList head after add(index=0)", v5, list1.peekFirst());
 
-        queue1.add(a1);
-        check("AntQueue add", 1, queue1.size());
+        check("Vector2DSinglyLinkedList contains existing element", true, list1.contains(v4));
+        check("Vector2DSinglyLinkedList contains missing element", false, list1.contains(new Vector2D(11.0, 12.0)));
 
-        queue1.add(a2);
-        check("AntQueue add second", 2, queue1.size());
+        Vector2D removed = list1.remove(1); // removes v1
+        checkVector("Vector2DSinglyLinkedList remove(index) returned element", v1, removed);
+        check("Vector2DSinglyLinkedList size after remove(index)", 3, list1.size());
+        checkVector("Vector2DSinglyLinkedList get(0) after remove(index)", v5, list1.get(0));
+        checkVector("Vector2DSinglyLinkedList get(1) after remove(index)", v4, list1.get(1));
+        checkVector("Vector2DSinglyLinkedList get(2) after remove(index)", v3, list1.get(2));
 
-        Ant polled = queue1.poll();
-        check("AntQueue poll", true, polled != null);
-        check("AntQueue size after poll", 1, queue1.size());
+        Vector2D polledLast = list1.pollLast(); // removes v3
+        checkVector("Vector2DSinglyLinkedList pollLast value", v3, polledLast);
+        check("Vector2DSinglyLinkedList size after pollLast", 2, list1.size());
+        checkVector("Vector2DSinglyLinkedList last after pollLast", v4, list1.peekLast());
 
-        Ant a3 = new Ant(world1);
-        Ant a4 = new Ant(world1);
-        Ant a5 = new Ant(world1);
-        queue1.add(a3);
-        queue1.add(a4);
-        queue1.add(a5);
-        check("AntQueue size after multiple adds", 4, queue1.size());
+        Vector2DSinglyLinkedList copy = new Vector2DSinglyLinkedList(list1);
+        check("Vector2DSinglyLinkedList copy constructor size", list1.size(), copy.size());
+        checkVector("Vector2DSinglyLinkedList copy constructor first element", list1.get(0), copy.get(0));
+        checkVector("Vector2DSinglyLinkedList copy constructor second element", list1.get(1), copy.get(1));
 
-        Ant first = queue1.poll();
-        check("AntQueue poll value", a2, first);
-
-        Ant peeked = queue1.peek();
-        check("AntQueue peek", true, peeked != null);
-        check("AntQueue peek value", a3, peeked);
-        check("AntQueue peek preserves size", 3, queue1.size());
-
-        AntQueue expandQueue = new AntQueue(2);
-        expandQueue.add(new Ant(world1));
-        expandQueue.add(new Ant(world1));
-        expandQueue.add(new Ant(world1));
-        check("AntQueue capacity expansion", 3, expandQueue.size());
+        list1.pollFirst();
+        list1.pollFirst();
+        check("Vector2DSinglyLinkedList empty after removing all", true, list1.isEmpty());
+        check("Vector2DSinglyLinkedList size after removing all", 0, list1.size());
 
         System.out.println("\n===============================================");
-        System.out.println("Vector2DAntMap TESTS");
+        System.out.println("Vector2DAntTreeMap TESTS");
         System.out.println("===============================================");
 
-        Vector2DAntMap map1 = new Vector2DAntMap();
-        World world2 = new World(200, 200, new Vector2D(0, 0), new Vector2D(0, 0), queue1);
+        Vector2DAntTreeMap map1 = new Vector2DAntTreeMap();
 
-        Ant ant1 = new Ant(world2);
-        Ant ant2 = new Ant(world2);
-        Vector2D key1 = new Vector2D(1.0, 2.0);
-        Vector2D key2 = new Vector2D(3.0, 4.0);
+        check("Vector2DAntTreeMap initial size", 0, map1.size());
+        check("Vector2DAntTreeMap containsKey on empty map", false, map1.containsKey(new Vector2D(1.0, 1.0)));
+        check("Vector2DAntTreeMap get on empty map", null, map1.get(new Vector2D(1.0, 1.0)));
 
-        map1.put(key1, ant1);
-        check("Vector2DAntMap size after put", 1, map1.size());
+        // Adjust these two lines if your current constructors of World or Ant differ.
+        Ant[] ants = new Ant[5];
+        World world = new World(200, 200, new Vector2D(0, 0), new Vector2D(0, 0), ants);
 
-        check("Vector2DAntMap containsKey true", true, map1.containsKey(key1));
-        check("Vector2DAntMap containsKey false", false, map1.containsKey(key2));
+        Ant ant1 = ants[0] = new Ant(world);
+        Ant ant2 = ants[1] = new Ant(world);
+        Ant ant3 = ants[2] = new Ant(world);
+        Ant ant4 = ants[3] = new Ant(world);
+        Ant ant5 = ants[4] = new Ant(world);
 
-        check("Vector2DAntMap containsValue true", true, map1.containsValue(ant1));
-        check("Vector2DAntMap containsValue false", false, map1.containsValue(ant2));
+        Vector2D k1 = new Vector2D(2.0, 2.0);
+        Vector2D k2 = new Vector2D(1.0, 5.0);
+        Vector2D k3 = new Vector2D(3.0, 1.0);
+        Vector2D k4 = new Vector2D(2.0, 1.0);
+        Vector2D k5 = new Vector2D(2.0, 3.0);
 
-        Ant retrieved = map1.get(key1);
-        check("Vector2DAntMap get", ant1, retrieved);
+        map1.put(k1, ant1);
+        check("Vector2DAntTreeMap size after first put", 1, map1.size());
+        check("Vector2DAntTreeMap get first inserted value", ant1, map1.get(k1));
+        check("Vector2DAntTreeMap containsKey first inserted key", true, map1.containsKey(k1));
+        check("Vector2DAntTreeMap containsValue first inserted value", true, map1.containsValue(ant1));
+        check("Vector2DAntTreeMap containsValue missing value", false, map1.containsValue(ant2));
 
-        map1.put(key2, ant2);
-        check("Vector2DAntMap size after second put", 2, map1.size());
+        map1.put(k2, ant2);
+        map1.put(k3, ant3);
+        map1.put(k4, ant4);
+        map1.put(k5, ant5);
+        check("Vector2DAntTreeMap size after multiple puts", 5, map1.size());
 
-        Ant oldValue = map1.put(key1, ant2);
-        check("Vector2DAntMap put existing key returns old value", true, oldValue != null);
-        check("Vector2DAntMap put existing key value", ant1, oldValue);
-        check("Vector2DAntMap size after replace", 2, map1.size());
+        check("Vector2DAntTreeMap get existing left subtree value", ant2, map1.get(k2));
+        check("Vector2DAntTreeMap get existing right subtree value", ant3, map1.get(k3));
+        check("Vector2DAntTreeMap get existing same-x smaller-y value", ant4, map1.get(k4));
+        check("Vector2DAntTreeMap get existing same-x larger-y value", ant5, map1.get(k5));
+        check("Vector2DAntTreeMap get missing key", null, map1.get(new Vector2D(100.0, 100.0)));
 
-        Vector2DStack keysStack = map1.keys();
-        check("Vector2DAntMap keys stack size", 2, keysStack.size());
+        check("Vector2DAntTreeMap containsKey existing", true, map1.containsKey(k3));
+        check("Vector2DAntTreeMap containsKey missing", false, map1.containsKey(new Vector2D(4.0, 4.0)));
 
-        AntQueue valuesQueue = map1.values();
-        check("Vector2DAntMap values queue size", 2, valuesQueue.size());
+        check("Vector2DAntTreeMap containsValue existing deep node", true, map1.containsValue(ant5));
+        check("Vector2DAntTreeMap containsValue missing", false, map1.containsValue(new Ant(world)));
 
-        Ant removed = map1.remove(key2);
-        check("Vector2DAntMap remove existing key", true, removed != null);
-        check("Vector2DAntMap size after remove", 1, map1.size());
-        check("Vector2DAntMap remove nonexistent key", null, map1.remove(new Vector2D(99, 99)));
+        Ant oldValue = map1.put(k1, ant3);
+        check("Vector2DAntTreeMap put existing key returns old value", ant1, oldValue);
+        check("Vector2DAntTreeMap size unchanged after replace", 5, map1.size());
+        check("Vector2DAntTreeMap replaced value accessible", ant3, map1.get(k1));
 
-        check("Vector2DAntMap null key: nonexistent before put", false, map1.containsKey(null));
-        map1.put(null, removed);
-        check("Vector2DAntMap null key: stack size", 2, map1.size());
-        check("Vector2DAntMap null key: exists after put", true, map1.containsKey(null));
+        Vector2DSinglyLinkedList keysList = map1.keys();
+        check("Vector2DAntTreeMap keys size", 5, keysList.size());
+
+        // Expected lexicographic order:
+        // (1,5), (2,1), (2,2), (2,3), (3,1)
+        checkVector("Vector2DAntTreeMap keys order index 0", k2, keysList.get(0));
+        checkVector("Vector2DAntTreeMap keys order index 1", k4, keysList.get(1));
+        checkVector("Vector2DAntTreeMap keys order index 2", k1, keysList.get(2));
+        checkVector("Vector2DAntTreeMap keys order index 3", k5, keysList.get(3));
+        checkVector("Vector2DAntTreeMap keys order index 4", k3, keysList.get(4));
+
+        Ant[] values = map1.values();
+        check("Vector2DAntTreeMap values length", 5, values.length);
+        check("Vector2DAntTreeMap values contains ant2", true, containsAnt(values, ant2));
+        check("Vector2DAntTreeMap values contains ant3", true, containsAnt(values, ant3));
+        check("Vector2DAntTreeMap values contains ant4", true, containsAnt(values, ant4));
+        check("Vector2DAntTreeMap values contains ant5", true, containsAnt(values, ant5));
 
         System.out.println("\n===============================================");
         System.out.println("ALL TESTS COMPLETED");
         System.out.println("===============================================");
+    }
+
+    private static boolean containsAnt(Ant[] values, Ant target) {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == target) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void checkVector(String testName, Vector2D expected, Vector2D actual) {
+        boolean ok = expected == null && actual == null
+                || expected != null && actual != null
+                && Double.compare(expected.getX(), actual.getX()) == 0
+                && Double.compare(expected.getY(), actual.getY()) == 0;
+
+        if (ok) {
+            ok();
+        } else {
+            fail(testName,
+                    expected == null ? "null" : "(" + expected.getX() + ", " + expected.getY() + ")",
+                    actual == null ? "null" : "(" + actual.getX() + ", " + actual.getY() + ")");
+        }
     }
 
     private static void check(String testName, Object expected, Object actual) {

@@ -14,7 +14,7 @@ public class Ant {
     private boolean carryingFood;
 
     private final World world;
-    private final Vector2DStack path;
+    private final Vector2DSinglyLinkedList path; // new data structure for path
 
     /**
      * Creates a new ant at the position of the nest of the specified world.
@@ -30,7 +30,7 @@ public class Ant {
         this.state = new State(world.getNest(), randomDirection());
         this.world = world;
         this.carryingFood = false;
-        this.path = new Vector2DStack();
+        this.path = new Vector2DSinglyLinkedList();
     }
 
     /**
@@ -71,7 +71,7 @@ public class Ant {
         if (!carryingFood) { // make a step searching for food
 
             // TODO: store current position in your path here
-            path.push(state.getPosition());
+            path.addLast(state.getPosition());
 
             Vector2D randomTurn = randomDirection().scale(0.35);
             Vector2D directionToFood = world.getFood().subtract(state.getPosition()).normalize().scale(0.05);
@@ -93,14 +93,17 @@ public class Ant {
                 return;
             }
 
-            Vector2D nextPosition = path.pop();
+            Vector2D nextPosition = path.pollLast();
             Vector2D nextDirection = nextPosition.subtract(state.getPosition());
 
             state= world.enforceBoundary(new State(nextPosition, nextDirection));
 
             if (state.getPosition().distanceTo(world.getNest()) < 1.0) {
                 carryingFood = false;
-                path.clear();
+                while(path.isEmpty())
+                {
+                    path.remove(0);
+                }
             }
         }
     }
