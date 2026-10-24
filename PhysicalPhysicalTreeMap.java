@@ -2,18 +2,16 @@
  * An associative data structure (map) mapping {@link Physical} keys
  * to {@link Physical} values.
  *
- * TODO: change this file according to `Teilaufgabe 1` in `angabe.md`.
+ * <p>This class represents a minimal key-value association structure.
+ * Each {@link Physical} key object is associated with exactly one {@link Physical} value.
  *
- * <p>This class represents a key-value association structure.
- *  Each {@link Physical} key is associated with exactly one {@link Physical} value.
- *  Key equality is based on structural equality (using the {@code equals} method),
- *  ensuring the Liskov Substitution Principle. This means that two distinct
- *  objects that represent the same physical entity are treated as the same key.</p>
- *
- *  <p>The associations are stored in a binary search tree ordered according
- *  to a {@link PhysicalComparator}.</p>
+ * <p>The associations are stored in a binary search tree ordered according
+ * to a {@link PhysicalComparator}.</p>
+ * <p>
+ * TODO: change this file according to `angabe.md`
  */
-public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap {
+public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIterable //TODO: activate clause
+{
 
     private PhysicalPhysicalTreeMapNode root;
     private int size;
@@ -42,17 +40,7 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap {
     }
 
     /**
-     * Inserts a new association into the map.
-     *
-     * <p>If the specified key object is already stored in this map
-     * (see {@code containsKey}), its associated value is replaced by the given
-     * value.</p>
-     *
-     * <p>Otherwise, a new association is inserted.</p>
-     *
-     * @param key the key; {@code key != null}
-     * @param value the value; {@code a != null}
-     * @return the previously associated value, or {@code null} if none existed
+     * {@inheritDoc}
      */
     @Override
     public Physical put(Physical key, Physical value) {
@@ -73,13 +61,7 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap {
     }
 
     /**
-     * Returns the value associated with the specified key.
-     *
-     * <p>If this map contains a key identical to {@code key},
-     * the associated value is returned.</p>
-     *
-     * @param key the key; {@code key != null}
-     * @return the associated value, or {@code null} if the key is not present
+     * {@inheritDoc}
      */
     @Override
     public Physical get(Physical key) {
@@ -88,15 +70,7 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap {
     }
 
     /**
-     * Returns whether this map contains the specified physical object as a key.
-     *
-     * <p>This method checks for object identity, not structural equality.
-     * That is, it returns {@code true} if and only if the exact same object
-     * reference (using {@code ==}) is stored in this tree as key.</p>
-     *
-     * @param key the key to check; {@code key != null}
-     * @return {@code true} if the key exists in the map,
-     *         {@code false} otherwise
+     * {@inheritDoc}
      */
     @Override
     public boolean containsKey(Physical key) {
@@ -105,13 +79,7 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap {
     }
 
     /**
-     * Returns whether this map contains the given object as value.
-     *
-     * <p>This method checks object identity, not structural equality.</p>
-     *
-     * @param value the value to check; {@code value != null}
-     * @return {@code true} if the value exists in the map,
-     *         {@code false} otherwise
+     * {@inheritDoc}
      */
     public boolean containsValue(Physical value) {
 
@@ -201,11 +169,11 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap {
      *
      * <p>
      * Example:
-     *
+     * <p>
      * FoodSource@(350.0, 300.0), r=80.0 -> FoodSource@(352.0, 300.0), r=90.0
-     *   FoodSource@(300.0, 200.0), r=50.0 -> FoodSource@(350.0, 300.0), r=80.0
-     *   Nest@(400.0, 300.0), r=100.0 -> FoodSource@(350.0, 300.0), r=80.0
-     *     Nest@(420.0, 320.0), r=20.0 -> FoodSource@(350.0, 300.0), r=80.0
+     * FoodSource@(300.0, 200.0), r=50.0 -> FoodSource@(350.0, 300.0), r=80.0
+     * Nest@(400.0, 300.0), r=100.0 -> FoodSource@(350.0, 300.0), r=80.0
+     * Nest@(420.0, 320.0), r=20.0 -> FoodSource@(350.0, 300.0), r=80.0
      * </p>
      *
      * @return a string representation of this map
@@ -213,11 +181,33 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap {
     @Override
     public String toString() {
 
-        //TODO: implement method.
         if (root == null) {
             return "(empty)";
         }
 
         return root.toIndentedString("");
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Returns an iterator over all keys stored in this map in descending
+     * order according to the comparator of this tree map.
+     *
+     * <p>The iterator performs a reverse in-order traversal of the
+     * underlying binary search tree.</p>
+     *
+     * <p>If the map is empty, the returned iterator has no
+     * elements.</p>
+     */
+    @Override
+    public PhysicalIterator iterator() {
+
+        // TODO: implement method.
+        PhysicalTreeIterator iter = new PhysicalTreeIterator();
+        if (root != null) {
+            root.iter(iter, false);
+        }
+        return iter;
     }
 }

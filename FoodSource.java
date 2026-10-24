@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * Physical food source object.
  */
@@ -6,28 +8,11 @@ public class FoodSource implements Physical {
     private final Vector2D position;
     private final double radius;
 
-    // TODO: override `equals` and `hashCode`
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FoodSource)) return false;
-        FoodSource other = (FoodSource) o;
-        if (Double.compare(other.radius, radius) != 0) return false;
-        return position != null ? position.equals(other.position) : other.position == null;
-    }
-    public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(radius);
-        result = (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (position != null ? position.hashCode() : 0);
-        return result;
-    }
     /**
      * Creates a food source with the specified position and radius.
      *
      * @param position the food position; {@code position != null}
-     * @param radius   the radius of the food source; {@code radius >= 0.0}
+     * @param radius the radius of the food source; {@code radius >= 0.0}
      */
     public FoodSource(Vector2D position, double radius) {
 
@@ -70,5 +55,23 @@ public class FoodSource implements Physical {
                 + getPosition().getX() + ", "
                 + getPosition().getY() + "), r="
                 + getRadius();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        FoodSource that = (FoodSource) o;
+        return Double.compare(radius, that.radius) == 0 && Objects.equals(position, that.position);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, radius);
     }
 }

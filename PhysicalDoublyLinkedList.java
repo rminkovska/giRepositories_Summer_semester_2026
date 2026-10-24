@@ -4,7 +4,7 @@
  * <p>The list is implemented as a (non-cyclic) doubly linked structure with
  * references to the first (head) and last node (last).</p>
  */
-public class PhysicalDoublyLinkedList {
+public class PhysicalDoublyLinkedList implements PhysicalIterable {
 
     private PhysicalDoublyLinkedListNode head;
     private PhysicalDoublyLinkedListNode last;
@@ -91,7 +91,7 @@ public class PhysicalDoublyLinkedList {
      *
      * @param index the position at which the element is to be inserted;
      *              {@code 0 <= index <= size()}
-     * @param p the element to add
+     * @param p     the element to add
      */
     public void add(int index, Physical p) {
 
@@ -298,4 +298,69 @@ public class PhysicalDoublyLinkedList {
             return current;
         }
     }
+
+    /**
+     * {@inheritDoc}* <p>
+     * Returns an iterator that traverses the elements of this list
+     * in their current order, starting at the head and proceeding
+     * to the last element.
+     */
+    @Override
+    public PhysicalIterator iterator() {
+
+        // TODO: implement method.
+        return new PhysicalDoublyLinkedListIterator(head);
+    }
+
+    /**
+     * Returns an iterator that traverses the elements of this list in ascending
+     * order according to the specified comparator.
+     *
+     * <p>The list itself is not modified. The iterator repeatedly searches for
+     * the smallest element that has not yet been returned.</p>
+     *
+     * @param comparator the comparator defining the order; {@code comparator != null}
+     * @return an iterator over the elements of this list in ascending order
+     */
+    public PhysicalIterator sortedIterator(PhysicalComparator comparator) {
+
+        // TODO: implement method.
+        PhysicalDoublyLinkedList sorted = SortedIter(comparator);
+        return new PhysicalDoublyLinkedListIterator(sorted.head);
+    }
+
+    private PhysicalDoublyLinkedList SortedIter(PhysicalComparator comparator) {
+        PhysicalDoublyLinkedList sorted = new PhysicalDoublyLinkedList();
+        PhysicalDoublyLinkedList clone = new PhysicalDoublyLinkedList(this);
+        PhysicalComparator cmp = comparator;
+        while (!clone.isEmpty()) {
+            int minInd = minInd(clone, comparator);
+            if (minInd == -1) {
+                break;
+            }
+            sorted.addLast(clone.remove(minInd));
+        }
+        return sorted;
+    }
+
+    private int minInd(PhysicalDoublyLinkedList list, PhysicalComparator comparator) {
+        PhysicalDoublyLinkedListNode current = list.head;
+        PhysicalComparator cmp = comparator;
+        Physical minValue = null;
+        int min_ind = -1;
+        int i = 0;
+
+        while (current != null) {
+            if (current.getValue() != null) {
+                if (minValue == null || comparator.compare(current.getValue(), minValue) < 0) {
+                    minValue = current.getValue();
+                    min_ind = i;
+                }
+            }
+            current = current.getNext();
+            i++;
+        }
+        return min_ind;
+    }
+
 }

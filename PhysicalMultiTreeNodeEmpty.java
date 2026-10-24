@@ -11,11 +11,19 @@
  *   <li>All queries return empty results</li>
  *   <li>Insertion creates a new non-empty node</li>
  * </ul>
+ * <p>
+ * TODO: change this file according to `angabe.md`.
  */
 public class PhysicalMultiTreeNodeEmpty implements PhysicalMultiTreeNode {
 
-    private static final PhysicalMultiTreeNodeEmpty EMPTY =
+    public static final PhysicalMultiTreeNodeEmpty EMPTY =
             new PhysicalMultiTreeNodeEmpty();
+
+    /**
+     * Other classes can not create an empty node. EMPTY is public instead.
+     */
+    private PhysicalMultiTreeNodeEmpty() {
+    }
 
     /**
      * {@inheritDoc}
@@ -85,5 +93,9 @@ public class PhysicalMultiTreeNodeEmpty implements PhysicalMultiTreeNode {
     @Override
     public String toIndentedString(String indent) {
         return "(empty)";
+    }
+
+    public Physical iter(PhysicalTreeIterator iterator, boolean next) {
+        return null;
     }
 }

@@ -9,91 +9,101 @@
  */
 public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
 
-    // TODO: all variables and additional methods must be private.
+    private Physical[] keys;
+    private Physical[] values;
+    private int size;
 
     /**
      * Creates an empty map.
      */
-    private Physical[] ks;
-    private Physical[] vs;
-    private int count;
-    int INITIAL_CAPACITY = 64;
-
     public PhysicalPhysicalHashMap() {
 
-        // TODO: implement constructor.
-        ks = new Physical[INITIAL_CAPACITY];
-        vs = new Physical[INITIAL_CAPACITY];
-        count = 0;
+        keys = new Physical[64];
+        values = new Physical[64];
+        size = 0;
 
-    }
-
-    private int find(Physical k) {
-        int i = k.hashCode() & (ks.length - 1);
-        while (ks[i] != null && !ks[i].equals(k)) {
-            i = (i + 1) & (ks.length - 1);
-        }
-        return i;
     }
 
     @Override
     public Physical put(Physical key, Physical value) {
 
-        // TODO: implement method.
-        if (key == null) return null;
-        int i = find(key);
-        Physical old = vs[i];
-        vs[i] = value;
-        if (ks[i] == null) {
-            ks[i] = key;
-            if (++count >= 0.75 * ks.length) {
-                Physical[] oks = ks, ovs = vs;
-                ks = new Physical[oks.length << 1];
-                vs = new Physical[oks.length << 1];
-                for (int j = 0; j < oks.length; j++) {
-                    if (oks[j] != null) {
-                        ks[i = find(oks[j])] = oks[j];
-                        vs[i] = ovs[j];
-                    }
-                }
-            }
+        int index = find(key);
+
+        if (keys[index] != null) {
+            Physical old = values[index];
+            values[index] = value;
+            return old;
         }
-        return old;
+
+        keys[index] = key;
+        values[index] = value;
+        size++;
+
+        if (size * 4 >= keys.length * 3) {
+            grow();
+        }
+
+        return null;
     }
 
     @Override
     public Physical get(Physical key) {
 
-        // TODO: implement method.
-        return vs[find(key)];
+        int index = find(key);
+        return keys[index] == null ? null : values[index];
     }
 
     @Override
     public boolean containsKey(Physical key) {
 
-        // TODO: implement method.
-        return ks[find(key)] != null;
+        int index = find(key);
+        return keys[index] != null;
     }
 
     @Override
     public int size() {
 
-        // TODO: implement method.
-        return count;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
 
-        // TODO: implement method.
-        return count == 0;
+        return size == 0;
     }
 
     @Override
     public void clear() {
-        // TODO: implement method.
-        ks = new Physical[INITIAL_CAPACITY];
-        vs = new Physical[INITIAL_CAPACITY];
-        count = 0;
+
+        keys = new Physical[64];
+        values = new Physical[64];
+        size = 0;
+    }
+
+    private int find(Physical key) {
+
+        int index = key.hashCode() & (keys.length - 1);
+
+        while (keys[index] != null && !keys[index].equals(key)) {
+            index = (index + 1) & (keys.length - 1);
+        }
+
+        return index;
+    }
+
+    private void grow() {
+
+        Physical[] oldKeys = keys;
+        Physical[] oldValues = values;
+
+        keys = new Physical[oldKeys.length * 2];
+        values = new Physical[oldValues.length * 2];
+        size = 0;
+
+        for (int i = 0; i < oldKeys.length; i++) {
+            if (oldKeys[i] != null) {
+                put(oldKeys[i], oldValues[i]);
+            }
+        }
     }
 }

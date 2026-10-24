@@ -9,7 +9,8 @@
  * Two stored objects may either be disjoint or one may fully contain the other.
  * Partial overlap is not allowed.</p>
  */
-public interface PhysicalMultiTreeNode {
+public interface PhysicalMultiTreeNode extends PhysicalIterableTreeNode //TODO: activate clause
+{
 
     /**
      * Returns the primary {@link Physical} object of this subtree.
@@ -96,4 +97,5 @@ public interface PhysicalMultiTreeNode {
      * @return a string representation of this subtree
      */
     String toIndentedString(String indent);
+    Physical iter(PhysicalTreeIterator iterator, boolean next);
 }

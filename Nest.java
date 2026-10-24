@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * Physical nest object.
  */
@@ -6,31 +8,11 @@ public class Nest implements Physical {
     private final Vector2D position;
     private final double radius;
 
-    // TODO: override `equals` and `hashCode`
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Nest)) return false;
-        Nest other = (Nest) o;
-
-        if (Double.compare(other.radius, radius) != 0) return false;
-
-        return position != null ? position.equals(other.position) : other.position == null;
-    }
-
-    public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(radius);
-        result = (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (position != null ? position.hashCode() : 0);
-        return result;
-    }
-
     /**
      * Creates a nest with the specified position and radius.
      *
      * @param position the nest position; {@code position != null}
-     * @param radius   the radius of the nest; {@code radius >= 0.0}
+     * @param radius the radius of the nest; {@code radius >= 0.0}
      */
     public Nest(Vector2D position, double radius) {
 
@@ -73,5 +55,23 @@ public class Nest implements Physical {
                 + getPosition().getX() + ", "
                 + getPosition().getY() + "), r="
                 + getRadius();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Nest nest = (Nest) o;
+        return Double.compare(radius, nest.radius) == 0 && Objects.equals(position, nest.position);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, radius);
     }
 }

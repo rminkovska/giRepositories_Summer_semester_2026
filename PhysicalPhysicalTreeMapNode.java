@@ -1,18 +1,13 @@
 /**
  * Node of a binary search tree storing {@link Physical} key-value pairs.
  *
- * TODO: change this file according to `Teilaufgabe 1` in `angabe.md`.
- *
  * <p>The subtree is ordered according to a {@link PhysicalComparator}.
  * Search and insertion decisions use this order relation.</p>
  *
- * <p>Keys are compared using {@link Physical#equals(Object)}.
- *  Two keys represent the same key iff they are equal according to
- *  {@code equals}, ensuring the Liskov Substitution Principle. This means that two distinct
- *  objects that represent the same physical entity are treated as the same key.</p>
- *
+ * TODO: change this file according to `angabe.md`.
  */
-public class PhysicalPhysicalTreeMapNode {
+public class PhysicalPhysicalTreeMapNode implements PhysicalIterableTreeNode //TODO: activate clause.
+{
 
     private Physical key;
     private Physical value;
@@ -50,16 +45,12 @@ public class PhysicalPhysicalTreeMapNode {
     /**
      * Inserts a key-value pair into this subtree or updates an existing entry.
      *
-     * <p>If the exact same key object `k` is already stored in this subtree
-     * (that is, {@code key == k}), its associated value is replaced by
+     * <p>If a key object equal to the specified key is already stored in this subtree,
+     * its associated value is replaced by
      * {@code value}, and the previous value is returned.</p>
      *
      * <p>Otherwise, a new node is inserted according to the comparator-defined
      * search tree order.</p>
-     *
-     * <p>If {@code key} compares equal to an existing key according to the comparator
-     * but is a different object reference, it is treated as a distinct key and
-     * inserted into the right subtree.</p>
      *
      * @param key the key to insert; {@code key != null}
      * @param value the associated value; {@code value != null}
@@ -96,9 +87,6 @@ public class PhysicalPhysicalTreeMapNode {
     /**
      * Returns the value associated with the given key object.
      *
-     * <p>The comparator determines the search path, but a match exists only
-     * if the exact same key object reference ({@code ==}) is found.</p>
-     *
      * @param key the key to search for; {@code key != null}
      * @return the associated value if the same key object is found,
      *         otherwise {@code null}
@@ -119,10 +107,7 @@ public class PhysicalPhysicalTreeMapNode {
     }
 
     /**
-     * Returns whether this subtree contains the specified key object.
-     *
-     * <p>This method checks object identity, not structural equality.
-     * The comparator determines the search path.</p>
+     * Returns whether this subtree contains a key equal to the specified key object.
      *
      * @param key the key to search for; {@code key != null}
      * @return {@code true} iff the same key object occurs in this subtree
@@ -143,16 +128,14 @@ public class PhysicalPhysicalTreeMapNode {
     }
 
     /**
-     * Returns whether the given physical object exists as a value in this subtree.
-     *
-     * <p>This method checks object identity ({@code ==}) for values.</p>
+     * Returns whether the given physical object is equal to a value in this subtree.
      *
      * @param value the value to search for; {@code value != null}
      * @return {@code true} iff the same value object occurs in this subtree
      */
     public boolean containsValue(Physical value) {
 
-        if (this.value == value) {
+        if (this.value.equals(value)) {
             return true;
         }
 
@@ -227,5 +210,24 @@ public class PhysicalPhysicalTreeMapNode {
         }
 
         return result;
+    }
+
+    public Physical iter(PhysicalTreeIterator iterator, boolean next){
+        if(!next){
+            PhysicalPhysicalTreeMapNode node = this;
+            while (node != null) {
+                new PhysicalTreeIterator(node, iterator);
+                node = node.right;
+            }
+            return null;
+        }
+        else{
+            PhysicalPhysicalTreeMapNode node = this.left;
+            while (node != null) {
+                new PhysicalTreeIterator(node, iterator);
+                node = node.right;
+            }
+        }
+        return this.key;
     }
 }

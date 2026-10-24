@@ -3,6 +3,8 @@
  *
  * <p>A leaf node stores exactly one primary {@link Physical} object and
  * has no child nodes.</p>
+ * <p>
+ * TODO: change this file according to `angabe.md`.
  */
 public class PhysicalMultiTreeNodeLeaf implements PhysicalMultiTreeNode {
 
@@ -46,8 +48,7 @@ public class PhysicalMultiTreeNodeLeaf implements PhysicalMultiTreeNode {
     @Override
     public boolean contains(Physical p) {
 
-        //TODO: implement method.
-        return this.value.equals(p);
+        return value.equals(p);
     }
 
     /**
@@ -59,9 +60,7 @@ public class PhysicalMultiTreeNodeLeaf implements PhysicalMultiTreeNode {
     @Override
     public PhysicalMultiTreeNode findNode(Physical p) {
 
-        //TODO: implement method.
-        if (this.value.equals(p)) return this;
-        else return new PhysicalMultiTreeNodeEmpty();
+        return value.equals(p) ? this : PhysicalMultiTreeNodeEmpty.EMPTY;
     }
 
     /**
@@ -108,10 +107,10 @@ public class PhysicalMultiTreeNodeLeaf implements PhysicalMultiTreeNode {
     @Override
     public String toIndentedString(String indent) {
 
-        //TODO: implement method.
-        StringBuilder sb = new StringBuilder();
-        sb.append(indent);
-        sb.append(this.value).append("\n");
-        return sb.toString();
+        return indent + value + "\n";
+    }
+
+    public Physical iter(PhysicalTreeIterator iterator, boolean next) {
+        return this.value;
     }
 }

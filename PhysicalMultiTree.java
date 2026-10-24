@@ -8,10 +8,10 @@
  * Two stored objects may either be disjoint or one may fully contain the other.
  * Partial overlap is not allowed.</p>
  *
- * TODO: use implementations of {@link PhysicalMultiTreeNode} as node representations.
- *   Do NOT use the Java Collection Framework in your implementation.
+ * TODO: make this class `PhysicalIterable` according to `angabe.md`
  */
-public class PhysicalMultiTree {
+public class PhysicalMultiTree implements PhysicalIterable //TODO: activate clause
+{
 
     private PhysicalMultiTreeNode root;
     private int size;
@@ -21,7 +21,7 @@ public class PhysicalMultiTree {
      */
     public PhysicalMultiTree() {
 
-        this.root = new PhysicalMultiTreeNodeEmpty();
+        this.root = PhysicalMultiTreeNodeEmpty.EMPTY;
         this.size = 0;
     }
 
@@ -76,7 +76,6 @@ public class PhysicalMultiTree {
      */
     public boolean contains(Physical p) {
 
-        //TODO: implement method.
         return root.contains(p);
     }
 
@@ -125,15 +124,10 @@ public class PhysicalMultiTree {
      */
     public Physical[] childrenOf(Physical parent) {
 
-        //TODO: implement method.
-        PhysicalMultiTreeNode node = root.findNode(parent);
-        if (node == null || node.getChildren() == null) {
-            return null;
-        }
-        PhysicalMultiTreeNode []children = node.getChildren();
-        Physical[] result = new Physical[children.length];
-        for (int i = 0; i < children.length; i++) {
-            result[i] = children[i].getValue();
+        PhysicalMultiTreeNode[] a = root.findNode(parent).getChildren();
+        Physical[] result = new Physical[a.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = a[i].getValue();
         }
         return result;
     }
@@ -143,7 +137,7 @@ public class PhysicalMultiTree {
      */
     public void clear() {
 
-        root = new PhysicalMultiTreeNodeEmpty();
+        root = PhysicalMultiTreeNodeEmpty.EMPTY;
         size = 0;
     }
 
@@ -167,31 +161,20 @@ public class PhysicalMultiTree {
      * @return a new map containing the parent relation of this tree
      */
     public PhysicalPhysicalMap parentMap() {
-        //TODO: implement method.
-        PhysicalPhysicalMap map = new PhysicalPhysicalTreeMap();
-        if (root == null || root.getValue() == null) {
-            return map;
-        }
-        fillMapRecursive(root, map);
-        return map;
+
+        PhysicalPhysicalMap result = new PhysicalPhysicalHashMap();
+        constructMap(root, result);
+        return result;
     }
 
-    private void fillMapRecursive(PhysicalMultiTreeNode node, PhysicalPhysicalMap map) {
-        if(node == null) return;
-        Physical parentValue = node.getValue();
-        PhysicalMultiTreeNode[] children = node.getChildren();
+    private void constructMap(PhysicalMultiTreeNode node,  PhysicalPhysicalMap map) {
 
-        if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                PhysicalMultiTreeNode nodeChild = children[i];
-                if(nodeChild != null && nodeChild.getValue() != null)
-                {
-                    map.put(nodeChild.getValue(), parentValue);
-                    fillMapRecursive(nodeChild, map);
-                }
-            }
+        for (PhysicalMultiTreeNode current: node.getChildren()) {
+            map.put(current.getValue(), node.getValue());
+            constructMap(current, map);
         }
     }
+
     /**
      * Returns a string representation of this tree.
      *
@@ -215,10 +198,14 @@ public class PhysicalMultiTree {
     @Override
     public String toString() {
 
-        //TODO: implement method.
-        if (root == null) {
-            return "(empty)";
+        return root.toIndentedString("");
+    }
+
+    public PhysicalIterator iterator(){
+        PhysicalTreeIterator iter = new PhysicalTreeIterator();
+        if (root != null) {
+            new PhysicalTreeIterator(root, iter);
         }
-        else return root.toIndentedString("");
+        return iter;
     }
 }

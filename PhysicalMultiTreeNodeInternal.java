@@ -3,6 +3,8 @@
  *
  * <p>Each internal node stores exactly one primary {@link Physical} object and
  * one or more child nodes.</p>
+ * <p>
+ * TODO: change this file according to `angabe.md`.
  */
 public class PhysicalMultiTreeNodeInternal implements PhysicalMultiTreeNode {
 
@@ -65,11 +67,16 @@ public class PhysicalMultiTreeNodeInternal implements PhysicalMultiTreeNode {
     @Override
     public boolean contains(Physical p) {
 
-        //TODO: implement method.
-        if (this.value.equals(p)) return true;
-        for (int i = 0; i < childCount; i++) {
-            if (children[i].contains(p)) return true;
+        if (value.equals(p)) {
+            return true;
         }
+
+        for (int i = 0; i < childCount; i++) {
+            if (children[i].contains(p)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -82,13 +89,18 @@ public class PhysicalMultiTreeNodeInternal implements PhysicalMultiTreeNode {
     @Override
     public PhysicalMultiTreeNode findNode(Physical p) {
 
-        //TODO: implement method.
-        if (this.value.equals(p)) return this;
-        for (int i = 0; i < childCount; i++) {
-            PhysicalMultiTreeNode child = children[i].findNode(p);
-            if (child != null && child.getValue() != null) return child;
+        if (value.equals(p)) {
+            return this;
         }
-        return new PhysicalMultiTreeNodeEmpty();
+
+        for (int i = 0; i < childCount; i++) {
+            PhysicalMultiTreeNode found = children[i].findNode(p);
+            if (found.getValue() != null) {
+                return found;
+            }
+        }
+
+        return PhysicalMultiTreeNodeEmpty.EMPTY;
     }
 
     /**
@@ -192,16 +204,15 @@ public class PhysicalMultiTreeNodeInternal implements PhysicalMultiTreeNode {
     @Override
     public String toIndentedString(String indent) {
 
-        //TODO: implement method.
-        StringBuilder sb = new StringBuilder();
-        sb.append(indent);
-        sb.append(this.value).append("\n");
+        String result = indent;
+
+        result += value + "\n";
+
         for (int i = 0; i < childCount; i++) {
-            if (children[i] != null) {
-                sb.append(children[i].toIndentedString(indent + "  "));
-            }
+            result += children[i].toIndentedString(indent + "  ");
         }
-        return sb.toString();
+
+        return result;
     }
 
     /**
@@ -248,5 +259,19 @@ public class PhysicalMultiTreeNodeInternal implements PhysicalMultiTreeNode {
         }
 
         children = newChildren;
+    }
+
+    public Physical iter(PhysicalTreeIterator iterator, boolean next) {
+
+        PhysicalMultiTreeNode[] children = this.getChildren();
+        if (children != null) {
+            for (int i = children.length - 1; i >= 0; i--) {
+                if (children[i] != null) {
+                    new PhysicalTreeIterator(children[i], iterator);
+                }
+            }
+        }
+        return this.value;
+
     }
 }
