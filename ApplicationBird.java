@@ -1,52 +1,36 @@
-/**
- * A simulation of flying birds.
- * <p>
- * TODO: change this class according to 'angabe.md'.
- */
-
 import codedraw.CodeDraw;
-import codedraw.Palette;
 
-import java.util.Arrays;
+import java.util.Random;
 
 public class ApplicationBird {
+    static void main(String[] args) {
 
-    /**
-     * The method {@code ApplicationBird} serves as an entry point for the simulation of flying birds.
-     * <p>
-     * It demonstrates basic usage of the class {@link Bird}.
-     */
-    static void main() {
 
-        Bird bird1 = new Bird();
-        bird1.position(1, 3);
-        Bird bird2 = new Bird();
-        bird2.position(300, 200);
+        final Random R = new Random(2026);
+        final int W = 900, H = 600, N = 250;
 
-        CodeDraw cd = new CodeDraw(400, 400);
+        World myWorld = new World(W, H);
+        Bird[] birds = new Bird[N];
+        CodeDraw cd = new CodeDraw(W, H);
 
-        bird1.velocity(36, 8);
-        bird2.velocity(42, 5);
 
-        bird1.move(2);
-        bird2.move(3);
+        for (int i = 0; i < N; i++) {
+            Vector2D position = new Vector2D(R.nextDouble() * W, R.nextDouble() * H);
+            Vector2D velocity = new Vector2D(R.nextDouble() * 2 - 1, R.nextDouble() * 2 - 1).normalize().scale(1 + R.nextDouble() * 2);
+            birds[i] = new Bird(position, velocity, myWorld);
+        }
 
-        while (!cd.isClosed()) {
-            cd.clear(Palette.DEEP_SKY_BLUE);
+        while (true) {
+            cd.clear();
 
-            bird1.move(1);
-            bird2.move(1);
+            for (Bird b : birds) {
+                b.calculateSteering(birds);
+            }
 
-            bird1.avoidCollision(bird2, 50);
-            bird2.avoidCollision(bird1, 50);
-
-            cd.setColor(Palette.CRIMSON);
-            cd.fillCircle(bird1.currentX(), bird1.currentY(), 8);
-
-            cd.setColor(Palette.YELLOW);
-            cd.fillCircle(bird2.currentX(), bird2.currentY(), 8);
-
-            cd.show(5);
+            for (Bird b : birds) {
+                b.draw(cd);
+            }
+            cd.show();
         }
     }
 }

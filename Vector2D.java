@@ -1,67 +1,89 @@
 /**
  * The class {@code Vector2D} represents a two-dimensional mathematical vector.
- * This class replaces the former array-based representation of vectors.
- *
- * A vector consists of an x- and a y-coordinate and is used to model
- * positions and directions in a two-dimensional space.
- *
- * This class is intended to encapsulate both, data (coordinates)
- * and the operations that can be performed on vectors, such as
- * addition, distance computation and normalization.
- *
- * A {@code Vector2D} object provides all operations for vector manipulation
- * via instance methods (no direct manipulation of the coordinates from outside
- * the class).
- *
- * Objects of this class are mutable, i.e., they can change their
- * state (coordinates) upon a method call.
+ * <p>
+ * TODO: Objects of this class are *immutable*,
+ * i.e., they do not change their state after construction.
  */
 public class Vector2D {
-    public double x;
-    public double y;
-    public void newCoordinates(double x, double y) {
+    // TODO: define this class such that it works with `ApplicationVector2D`.
+    // TODO: define constructors.
+    // TODO: write javadoc specifications for all methods.
+    private final double x;
+    private final double y;
+    /**
+     * Constructs a new {@code Vector2D} with the given x and y.
+     *
+     * @param x the x-coordinate of the vector;
+     * @param y the y-coordinate of the vector;
+     */
+    public Vector2D(double x, double y) {
         this.x = x;
         this.y = y;
     }
-    public Vector2D add(Vector2D another){
-        Vector2D sum= new Vector2D();
-        sum.newCoordinates(this.x+another.x, this.y+another.y);
-        return sum;
+    /**
+     * Returns the x-coordinate of the vector;
+     *
+     * @return the x-coordinate of the vector;
+     */
+    public double getX() {
+        return x;
     }
-    public Vector2D substract(Vector2D another){
-        Vector2D sub= new Vector2D();
-        sub.newCoordinates(this.x-another.x, this.y-another.y);
-        return sub;
+    /**
+     * Returns the y-coordinate of the vector;
+     *
+     * @return the y-coordinate of the vector;
+     */
+    public double getY() {
+        return y;
     }
-    public void scale(double factor)
-    {
-        this.x*=factor;
-        this.y*=factor;
+
+    /**
+     * Returns the sum of this vector and another vector;
+     *
+     * @param other the vector to add
+     * @return a new {@code Vector2D} which is the sum (never {@code null})
+     */
+    public Vector2D add(Vector2D other) {
+        return new Vector2D(x + other.x, y + other.y);
     }
-    public double distance(Vector2D another)
-    {
-        return Math.sqrt((this.x-another.x)*(this.x-another.x)+(this.y-another.y)*(this.y-another.y));
+    /**
+     * Returns the difference of this vector and another vector;
+     *
+     * @param other the vector to subtract
+     * @return a new {@code Vector2D} which is the difference (never {@code null})
+     */
+    public Vector2D subtract(Vector2D other) {
+        return new Vector2D(x - other.x, y - other.y);
     }
-    public double length()
-    {
-        return Math.sqrt((this.x*this.x)+(this.y*this.y));
+    /**
+     * Returns the scaled with a factor vector;
+     *
+     * @param factor the multiplier of the components;
+     * @return the vector scaled by the given factor (never {@code null});
+     */
+    public Vector2D scale(double factor) {
+        return new Vector2D(x * factor, y * factor);
     }
-    public void normalize()
-    {
-        if(length()!=0)
-        {
-            this.x /= length();
-            this.y /= length();
-        }
+    /**
+     *
+     * Returns the Euclidean length of the vector;
+     *
+     * @return the Euclidean length of the vector ;
+     */
+    public double length() {
+        return Math.sqrt(x * x + y * y);
     }
-    public boolean Nullvektor()
-    {
-        if(this.x==0 && this.y==0) return true;
-        else return false;
+    /**
+     * Returns a normalized vector;
+     *
+     * If the vector has a length of 0, a zero-vector is returned to
+     * avoid division by zero.
+     *
+     * @return a normalized {@code Vector2D} (never {@code null});
+     */
+    public Vector2D normalize() {
+        if (length()==0) return new Vector2D(0, 0);
+        return new Vector2D(x / length(), y / length());
     }
-    public double [] toArray()
-    {
-        return new double[]{this.x,this.y};
-    }
-    // TODO: define this class.
+
 }
