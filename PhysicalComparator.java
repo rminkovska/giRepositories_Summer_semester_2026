@@ -36,7 +36,7 @@ public interface PhysicalComparator {
      * @param a the first object; {@code a != null}
      * @param b the second object; {@code b != null}
      * @return a negative integer, zero, or a positive integer as {@code a}
-     * is less than, equal to, or greater than {@code b}
+     *         is less than, equal to, or greater than {@code b}
      */
     int compare(Physical a, Physical b);
 }

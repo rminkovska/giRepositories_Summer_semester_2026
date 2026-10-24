@@ -95,6 +95,7 @@ public class PhysicalTreeIterator implements PhysicalIterator {
         node = parent.node;
         parent = parent.parent;
 
+        // call iter to return element and possibly push further nodes
         return todo.iter(this, true);
     }
 }

@@ -7,22 +7,21 @@
  *
  * <p>The associations are stored in a binary search tree ordered according
  * to a {@link PhysicalComparator}.</p>
- * <p>
- * TODO: change this file according to `angabe.md`
  */
-public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIterable //TODO: activate clause
-{
+public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap {
 
     private PhysicalPhysicalTreeMapNode root;
     private int size;
     private PhysicalComparator comparator;
+
+    //TODO: override `equals` and `hashCode`.
 
     /**
      * Creates an empty map ordered according to {@link XComparator}.</p> .
      */
     public PhysicalPhysicalTreeMap() {
 
-        this.root = null;
+        this.root = PhysicalPhysicalTreeMapNodeEmpty.EMPTY;;
         this.size = 0;
         this.comparator = new XComparator();
     }
@@ -34,7 +33,7 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIte
      */
     public PhysicalPhysicalTreeMap(PhysicalComparator comparator) {
 
-        this.root = null;
+        this.root = PhysicalPhysicalTreeMapNodeEmpty.EMPTY;
         this.size = 0;
         this.comparator = comparator;
     }
@@ -45,19 +44,16 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIte
     @Override
     public Physical put(Physical key, Physical value) {
 
-        if (root == null) {
-            root = new PhysicalPhysicalTreeMapNode(key, value, comparator);
-            size++;
-            return null;
-        }
 
-        Physical old = root.put(key, value);
+        Physical[] oldValueBox = new Physical[1];
 
-        if (old == null) {
+        root = root.put(key, value, comparator, oldValueBox);
+
+        if (oldValueBox[0] == null) {
             size++;
         }
 
-        return old;
+        return oldValueBox[0];
     }
 
     /**
@@ -66,7 +62,7 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIte
     @Override
     public Physical get(Physical key) {
 
-        return root == null ? null : root.get(key);
+        return root.get(key, comparator);
     }
 
     /**
@@ -75,7 +71,7 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIte
     @Override
     public boolean containsKey(Physical key) {
 
-        return root != null && root.containsKey(key);
+        return root.containsKey(key, comparator);
     }
 
     /**
@@ -83,7 +79,7 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIte
      */
     public boolean containsValue(Physical value) {
 
-        return root != null && root.containsValue(value);
+        return root.containsValue(value);
     }
 
     /**
@@ -110,52 +106,38 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIte
     @Override
     public void clear() {
 
-        root = null;
+        root = PhysicalPhysicalTreeMapNodeEmpty.EMPTY;
         size = 0;
     }
 
     /**
-     * Returns all keys stored in this map.
-     *
-     * <p>The returned list contains all {@link Physical} keys currently
-     * stored in the map. Each key appears exactly once in the list.
-     * The keys are returned in ascending order according to the key order
-     * of this tree map. The smallest key appears at index {@code 0}
-     * of the returned list.</p>
-     *
-     * @return a list containing all stored keys
+     * {@inheritDoc}
      */
-    public PhysicalDoublyLinkedList keys() {
+    @Override
+    public PhysicalSet keySet() {
 
-        PhysicalDoublyLinkedList result = new PhysicalDoublyLinkedList();
-
-        if (root != null) {
-            root.fillKeysInOrder(result);
-        }
-
-        return result;
+        //TODO: implement method.
+        PhysicalTreeSet set = new PhysicalTreeSet();
+        root.fillKeys(set);
+        return set;
     }
 
     /**
      * Returns all values stored in this map.
      *
-     * <p>The returned array contains all values currently stored in the map.
-     * Duplicate entries may occur if different keys are associated with equal
-     * values.</p>
+     * <p>The returned set contains all values currently stored in the map (no duplicates).</p>
+     * <p>
+     * The returned set is independent of this map. Structural changes to this map after the method call do
+     * not affect the returned set, and vice versa. The contained Physical objects themselves are not copied.
      *
-     * <p>The values are written in ascending order of their associated keys.</p>
-     *
-     * @return an array containing all stored values
+     * @return a set containing all stored values.
      */
-    public Physical[] values() {
+    public PhysicalSet valueSet() {
 
-        Physical[] result = new Physical[size];
-
-        if (root != null) {
-            root.fillValues(result, 0);
-        }
-
-        return result;
+        //TODO: implement method.
+        PhysicalTreeSet set = new PhysicalTreeSet();
+        root.fillValues(set);
+        return set;
     }
 
     /**
@@ -181,33 +163,46 @@ public class PhysicalPhysicalTreeMap implements PhysicalPhysicalMap, PhysicalIte
     @Override
     public String toString() {
 
-        if (root == null) {
+        if (size == 0) {
             return "(empty)";
         }
 
         return root.toIndentedString("");
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Returns an iterator over all keys stored in this map in descending
-     * order according to the comparator of this tree map.
-     *
-     * <p>The iterator performs a reverse in-order traversal of the
-     * underlying binary search tree.</p>
-     *
-     * <p>If the map is empty, the returned iterator has no
-     * elements.</p>
-     */
     @Override
-    public PhysicalIterator iterator() {
+    public boolean equals(Object o){
+        if (this == o) return true;
+        if (!(o instanceof PhysicalPhysicalMap)) return false;
+        PhysicalPhysicalMap other = (PhysicalPhysicalMap) o;
+        if (this.size()!= other.size()) return false;
+        PhysicalIterator iter = this.keySet().iterator();
+        while (iter.hasNext()){
+            Physical key = iter.next();
+            if (!other.containsKey(key)) return false;
 
-        // TODO: implement method.
-        PhysicalTreeIterator iter = new PhysicalTreeIterator();
-        if (root != null) {
-            root.iter(iter, false);
+            Physical thisValue = this.get(key);
+            Physical otherValue = other.get(key);
+
+            if (!thisValue.equals(otherValue)) return false;
+
         }
-        return iter;
+        return true;
+    }
+
+    @Override
+    public int hashCode(){
+        int hash = 0;
+        PhysicalIterator iter = this.keySet().iterator();
+        while (iter.hasNext()){
+            Physical key = iter.next();
+            Physical value = this.get(key);
+
+            int keyHash = (key == null) ? 0 : key.hashCode();
+            int valueHash = (value == null) ? 0 : value.hashCode();
+
+            hash += (keyHash ^ valueHash);
+        }
+        return hash;
     }
 }

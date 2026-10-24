@@ -62,4 +62,52 @@ public interface PhysicalPhysicalMap {
      * Removes all associations from this map.
      */
     void clear();
+
+    /**
+     * Returns a set containing all keys currently stored in this map.
+     *
+     * <p>Each key occurs exactly once in the returned set.</p>
+     *
+     * <p>The returned set is independent of this map. Structural changes
+     * to this map after the method call do not affect the returned set,
+     * and vice versa.</p>
+     *
+     * <p>The contained {@link Physical} objects themselves are not copied.</p>
+     *
+     * @return a set containing all keys currently stored in this map
+     */
+    PhysicalSet keySet();
+
+    /**
+     * Returns whether this map is equal to the specified object.
+     *
+     * <p>Two {@code PhysicalPhysicalMap} objects are considered equal iff</p>
+     * <ul>
+     *   <li>the specified object is also a {@code PhysicalPhysicalMap},</li>
+     *   <li>both maps contain the same number of associations, and</li>
+     *   <li>for every key contained in this map, the other map contains
+     *       an equal key associated with an equal value.</li>
+     * </ul>
+     *
+     * <p>The concrete internal representation and iteration order are irrelevant.</p>
+     *
+     * @param o the object to compare with
+     * @return {@code true} iff the specified object represents an equal map
+     */
+    @Override
+    boolean equals(Object o);
+
+    /**
+     * Returns the hash code value of this map.
+     *
+     * <p>The hash code is computed from the key-value associations stored
+     * in this map. Equal maps must have the same hash code.</p>
+     *
+     * <p>The concrete internal representation and iteration order do not
+     * influence the hash code.</p>
+     *
+     * @return the hash code value of this map
+     */
+    @Override
+    int hashCode();
 }

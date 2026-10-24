@@ -7,11 +7,14 @@
  *
  * <p>This map does not store {@code null} keys or {@code null} values.</p>
  */
-public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
+public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIterable {
 
     private Physical[] keys;
     private Physical[] values;
     private int size;
+
+    //TODO: override `equals` and `hashCode`.
+    //TODO: iterator()
 
     /**
      * Creates an empty map.
@@ -24,6 +27,9 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Physical put(Physical key, Physical value) {
 
@@ -46,6 +52,9 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Physical get(Physical key) {
 
@@ -53,6 +62,9 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
         return keys[index] == null ? null : values[index];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean containsKey(Physical key) {
 
@@ -66,12 +78,18 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
         return size;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEmpty() {
 
         return size == 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clear() {
 
@@ -80,6 +98,42 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
         size = 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PhysicalSet keySet() {
+
+        //TODO: implement method.
+        PhysicalTreeSet set = new PhysicalTreeSet();
+        PhysicalIterator iter = this.iterator();
+        while (iter.hasNext()) {
+            set.add(iter.next());
+        }
+
+        return set;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PhysicalIterator iterator() {
+
+        //TODO: implement method.
+        return new PhysicalPhysicalHashMapIterator(keys);
+    }
+
+    /**
+     * Returns the array index at which the specified key is stored or
+     * should be inserted.
+     *
+     * <p>The search uses linear probing beginning at the hash position
+     * derived from {@code key.hashCode()}.</p>
+     *
+     * @param key the key to search for; {@code key != null}
+     * @return the array index of the matching key or the first free slot
+     */
     private int find(Physical key) {
 
         int index = key.hashCode() & (keys.length - 1);
@@ -91,6 +145,12 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
         return index;
     }
 
+    /**
+     * Enlarges the internal hash table and reinserts all currently
+     * stored associations.
+     *
+     * <p>The capacity of the internal arrays is doubled.</p>
+     */
     private void grow() {
 
         Physical[] oldKeys = keys;
@@ -105,5 +165,49 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
                 put(oldKeys[i], oldValues[i]);
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof PhysicalPhysicalMap)) return false;
+
+        PhysicalPhysicalMap other = (PhysicalPhysicalMap) o;
+
+        if (this.size() != other.size()) return false;
+
+        PhysicalIterator iter = this.iterator();
+
+        while (iter.hasNext()) {
+            Physical key = iter.next();
+
+            if (!other.containsKey(key)) return false;
+
+            Physical thisValue = this.get(key);
+            Physical otherValue = other.get(key);
+
+            if (!thisValue.equals(otherValue)) return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        PhysicalIterator iter = this.iterator();
+
+        while (iter.hasNext()) {
+            Physical key = iter.next();
+            Physical value = this.get(key);
+
+            int keyHash = (key == null) ? 0 : key.hashCode();
+            int valueHash = (value == null) ? 0 : value.hashCode();
+
+            hash += (keyHash ^ valueHash);
+        }
+
+        return hash;
     }
 }
