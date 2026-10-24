@@ -2,179 +2,225 @@ public class ApplicationTest {
 
     public static void main(String[] args) {
         System.out.println("===============================================");
-        System.out.println("Vector2DSinglyLinkedList TESTS");
+        System.out.println("PhysicalDoublyLinkedRingList TESTS");
         System.out.println("===============================================");
 
-        Vector2DSinglyLinkedList list1 = new Vector2DSinglyLinkedList();
-        Vector2D v1 = new Vector2D(1.0, 2.0);
-        Vector2D v2 = new Vector2D(3.0, 4.0);
-        Vector2D v3 = new Vector2D(5.0, 6.0);
-        Vector2D v4 = new Vector2D(7.0, 8.0);
-        Vector2D v5 = new Vector2D(9.0, 10.0);
+        PhysicalDoublyLinkedRingList list1 = new PhysicalDoublyLinkedRingList();
 
-        check("Vector2DSinglyLinkedList initial size", 0, list1.size());
-        check("Vector2DSinglyLinkedList isEmpty on empty list", true, list1.isEmpty());
-        check("Vector2DSinglyLinkedList peekFirst on empty list", null, list1.peekFirst());
-        check("Vector2DSinglyLinkedList peekLast on empty list", null, list1.peekLast());
-        check("Vector2DSinglyLinkedList pollFirst on empty list", null, list1.pollFirst());
-        check("Vector2DSinglyLinkedList pollLast on empty list", null, list1.pollLast());
+        Physical p1 = new Nest(new Vector2D(1.0, 2.0), 1.0);
+        Physical p2 = new FoodSource(new Vector2D(3.0, 4.0), 2.0);
+        Physical p3 = new Nest(new Vector2D(5.0, 6.0), 3.0);
+        Physical p4 = new FoodSource(new Vector2D(7.0, 8.0), 4.0);
+        Physical p5 = new Nest(new Vector2D(9.0, 10.0), 5.0);
 
-        list1.addFirst(v1);
-        check("Vector2DSinglyLinkedList addFirst size", 1, list1.size());
-        checkVector("Vector2DSinglyLinkedList addFirst content", v1, list1.peekFirst());
-        checkVector("Vector2DSinglyLinkedList peekLast after addFirst", v1, list1.peekLast());
+        check("PhysicalDoublyLinkedRingList initial size", 0, list1.size());
+        check("PhysicalDoublyLinkedRingList isEmpty on empty list", true, list1.isEmpty());
+        check("PhysicalDoublyLinkedRingList peekFirst on empty list", null, list1.peekFirst());
+        check("PhysicalDoublyLinkedRingList peekLast on empty list", null, list1.peekLast());
+        check("PhysicalDoublyLinkedRingList pollFirst on empty list", null, list1.pollFirst());
+        check("PhysicalDoublyLinkedRingList pollLast on empty list", null, list1.pollLast());
 
-        list1.addFirst(v2);
-        check("Vector2DSinglyLinkedList addFirst second size", 2, list1.size());
-        checkVector("Vector2DSinglyLinkedList addFirst second head", v2, list1.peekFirst());
-        checkVector("Vector2DSinglyLinkedList peekLast after second addFirst", v1, list1.peekLast());
+        list1.addFirst(p1);
+        check("PhysicalDoublyLinkedRingList addFirst size", 1, list1.size());
+        checkPhysical("PhysicalDoublyLinkedRingList addFirst content", p1, list1.peekFirst());
+        checkPhysical("PhysicalDoublyLinkedRingList peekLast after addFirst", p1, list1.peekLast());
 
-        Vector2D polledFirst = list1.pollFirst();
-        checkVector("Vector2DSinglyLinkedList pollFirst value", v2, polledFirst);
-        check("Vector2DSinglyLinkedList size after pollFirst", 1, list1.size());
-        checkVector("Vector2DSinglyLinkedList new head after pollFirst", v1, list1.peekFirst());
+        list1.addFirst(p2);
+        check("PhysicalDoublyLinkedRingList addFirst second size", 2, list1.size());
+        checkPhysical("PhysicalDoublyLinkedRingList addFirst second head", p2, list1.peekFirst());
+        checkPhysical("PhysicalDoublyLinkedRingList peekLast after second addFirst", p1, list1.peekLast());
 
-        list1.addLast(v3);
-        check("Vector2DSinglyLinkedList addLast size", 2, list1.size());
-        checkVector("Vector2DSinglyLinkedList addLast head unchanged", v1, list1.peekFirst());
-        checkVector("Vector2DSinglyLinkedList addLast last", v3, list1.peekLast());
+        Physical polledFirst = list1.pollFirst();
+        checkPhysical("PhysicalDoublyLinkedRingList pollFirst value", p2, polledFirst);
+        check("PhysicalDoublyLinkedRingList size after pollFirst", 1, list1.size());
+        checkPhysical("PhysicalDoublyLinkedRingList new head after pollFirst", p1, list1.peekFirst());
 
-        list1.add(1, v4); // list: v1, v4, v3
-        check("Vector2DSinglyLinkedList add(index) size", 3, list1.size());
-        checkVector("Vector2DSinglyLinkedList get(0)", v1, list1.get(0));
-        checkVector("Vector2DSinglyLinkedList get(1)", v4, list1.get(1));
-        checkVector("Vector2DSinglyLinkedList get(2)", v3, list1.get(2));
+        list1.addLast(p3);
+        check("PhysicalDoublyLinkedRingList addLast size", 2, list1.size());
+        checkPhysical("PhysicalDoublyLinkedRingList addLast head unchanged", p1, list1.peekFirst());
+        checkPhysical("PhysicalDoublyLinkedRingList addLast last", p3, list1.peekLast());
 
-        list1.add(0, v5); // list: v5, v1, v4, v3
-        check("Vector2DSinglyLinkedList add(index=0) size", 4, list1.size());
-        checkVector("Vector2DSinglyLinkedList head after add(index=0)", v5, list1.peekFirst());
+        list1.add(1, p4); // list: p1, p4, p3
+        check("PhysicalDoublyLinkedRingList add(index) size", 3, list1.size());
+        checkPhysical("PhysicalDoublyLinkedRingList get(0)", p1, list1.get(0));
+        checkPhysical("PhysicalDoublyLinkedRingList get(1)", p4, list1.get(1));
+        checkPhysical("PhysicalDoublyLinkedRingList get(2)", p3, list1.get(2));
 
-        check("Vector2DSinglyLinkedList contains existing element", true, list1.contains(v4));
-        check("Vector2DSinglyLinkedList contains missing element", false, list1.contains(new Vector2D(11.0, 12.0)));
+        list1.add(0, p5); // list: p5, p1, p4, p3
+        check("PhysicalDoublyLinkedRingList add(index=0) size", 4, list1.size());
+        checkPhysical("PhysicalDoublyLinkedRingList head after add(index=0)", p5, list1.peekFirst());
 
-        Vector2D removed = list1.remove(1); // removes v1
-        checkVector("Vector2DSinglyLinkedList remove(index) returned element", v1, removed);
-        check("Vector2DSinglyLinkedList size after remove(index)", 3, list1.size());
-        checkVector("Vector2DSinglyLinkedList get(0) after remove(index)", v5, list1.get(0));
-        checkVector("Vector2DSinglyLinkedList get(1) after remove(index)", v4, list1.get(1));
-        checkVector("Vector2DSinglyLinkedList get(2) after remove(index)", v3, list1.get(2));
+        check("PhysicalDoublyLinkedRingList contains existing element", true, list1.contains(p4));
+        check("PhysicalDoublyLinkedRingList contains missing element", false,
+                list1.contains(new Nest(new Vector2D(11.0, 12.0), 1.0)));
 
-        Vector2D polledLast = list1.pollLast(); // removes v3
-        checkVector("Vector2DSinglyLinkedList pollLast value", v3, polledLast);
-        check("Vector2DSinglyLinkedList size after pollLast", 2, list1.size());
-        checkVector("Vector2DSinglyLinkedList last after pollLast", v4, list1.peekLast());
+        Physical removed = list1.remove(1); // removes p1
+        checkPhysical("PhysicalDoublyLinkedRingList remove(index) returned element", p1, removed);
+        check("PhysicalDoublyLinkedRingList size after remove(index)", 3, list1.size());
+        checkPhysical("PhysicalDoublyLinkedRingList get(0) after remove(index)", p5, list1.get(0));
+        checkPhysical("PhysicalDoublyLinkedRingList get(1) after remove(index)", p4, list1.get(1));
+        checkPhysical("PhysicalDoublyLinkedRingList get(2) after remove(index)", p3, list1.get(2));
 
-        Vector2DSinglyLinkedList copy = new Vector2DSinglyLinkedList(list1);
-        check("Vector2DSinglyLinkedList copy constructor size", list1.size(), copy.size());
-        checkVector("Vector2DSinglyLinkedList copy constructor first element", list1.get(0), copy.get(0));
-        checkVector("Vector2DSinglyLinkedList copy constructor second element", list1.get(1), copy.get(1));
+        Physical polledLast = list1.pollLast(); // removes p3
+        checkPhysical("PhysicalDoublyLinkedRingList pollLast value", p3, polledLast);
+        check("PhysicalDoublyLinkedRingList size after pollLast", 2, list1.size());
+        checkPhysical("PhysicalDoublyLinkedRingList last after pollLast", p4, list1.peekLast());
 
-        list1.pollFirst();
-        list1.pollFirst();
-        check("Vector2DSinglyLinkedList empty after removing all", true, list1.isEmpty());
-        check("Vector2DSinglyLinkedList size after removing all", 0, list1.size());
+        PhysicalDoublyLinkedRingList copy = new PhysicalDoublyLinkedRingList(list1);
+        check("PhysicalDoublyLinkedRingList copy constructor size", list1.size(), copy.size());
+        checkPhysical("PhysicalDoublyLinkedRingList copy constructor first element", list1.get(0), copy.get(0));
+        checkPhysical("PhysicalDoublyLinkedRingList copy constructor second element", list1.get(1), copy.get(1));
+
+        list1.clear();
+        check("PhysicalDoublyLinkedRingList empty after clear", true, list1.isEmpty());
+        check("PhysicalDoublyLinkedRingList size after clear", 0, list1.size());
+        check("PhysicalDoublyLinkedRingList peekFirst after clear", null, list1.peekFirst());
+        check("PhysicalDoublyLinkedRingList peekLast after clear", null, list1.peekLast());
 
         System.out.println("\n===============================================");
-        System.out.println("Vector2DAntTreeMap TESTS");
+        System.out.println("PhysicalKDTree TESTS");
         System.out.println("===============================================");
 
-        Vector2DAntTreeMap map1 = new Vector2DAntTreeMap();
+        Physical t1 = new Nest(new Vector2D(2.0, 2.0), 1.0);
+        Physical t2 = new FoodSource(new Vector2D(1.0, 5.0), 1.0);
+        Physical t3 = new Nest(new Vector2D(3.0, 1.0), 1.0);
+        Physical t4 = new FoodSource(new Vector2D(2.0, 1.0), 1.0);
+        Physical t5 = new Nest(new Vector2D(2.0, 3.0), 2.5);
 
-        check("Vector2DAntTreeMap initial size", 0, map1.size());
-        check("Vector2DAntTreeMap containsKey on empty map", false, map1.containsKey(new Vector2D(1.0, 1.0)));
-        check("Vector2DAntTreeMap get on empty map", null, map1.get(new Vector2D(1.0, 1.0)));
+        Physical[] data = new Physical[]{t1, t2, t3, t4, t5};
 
-        // Adjust these two lines if your current constructors of World or Ant differ.
-        Ant[] ants = new Ant[5];
-        World world = new World(200, 200, new Vector2D(0, 0), new Vector2D(0, 0), ants);
+        PhysicalKDTreeSet tree1 = new PhysicalKDTreeSet();
 
-        Ant ant1 = ants[0] = new Ant(world);
-        Ant ant2 = ants[1] = new Ant(world);
-        Ant ant3 = ants[2] = new Ant(world);
-        Ant ant4 = ants[3] = new Ant(world);
-        Ant ant5 = ants[4] = new Ant(world);
+        check("PhysicalKDTree initial size", 0, tree1.size());
+        check("PhysicalKDTree isEmpty initially", true, tree1.isEmpty());
+        check("PhysicalKDTree max radius on empty tree", 0.0, tree1.getMaxStoredRadius());
 
-        Vector2D k1 = new Vector2D(2.0, 2.0);
-        Vector2D k2 = new Vector2D(1.0, 5.0);
-        Vector2D k3 = new Vector2D(3.0, 1.0);
-        Vector2D k4 = new Vector2D(2.0, 1.0);
-        Vector2D k5 = new Vector2D(2.0, 3.0);
+        tree1.add(t1);
+        check("PhysicalKDTree size after first add", 1, tree1.size());
+        check("PhysicalKDTree isEmpty after first add", false, tree1.isEmpty());
+        check("PhysicalKDTree max radius after first add", 1.0, tree1.getMaxStoredRadius());
 
-        map1.put(k1, ant1);
-        check("Vector2DAntTreeMap size after first put", 1, map1.size());
-        check("Vector2DAntTreeMap get first inserted value", ant1, map1.get(k1));
-        check("Vector2DAntTreeMap containsKey first inserted key", true, map1.containsKey(k1));
-        check("Vector2DAntTreeMap containsValue first inserted value", true, map1.containsValue(ant1));
-        check("Vector2DAntTreeMap containsValue missing value", false, map1.containsValue(ant2));
+        tree1.add(t2);
+        tree1.add(t3);
+        check("PhysicalKDTree size after individual adds", 3, tree1.size());
+        check("PhysicalKDTree max radius after three adds", 1.0, tree1.getMaxStoredRadius());
 
-        map1.put(k2, ant2);
-        map1.put(k3, ant3);
-        map1.put(k4, ant4);
-        map1.put(k5, ant5);
-        check("Vector2DAntTreeMap size after multiple puts", 5, map1.size());
+        check("PhysicalKDTree contains t1 after first add", true, tree1.contains(t1));
+        check("PhysicalKDTree contains t2 after add", true, tree1.contains(t2));
+        check("PhysicalKDTree contains t3 after add", true, tree1.contains(t3));
 
-        check("Vector2DAntTreeMap get existing left subtree value", ant2, map1.get(k2));
-        check("Vector2DAntTreeMap get existing right subtree value", ant3, map1.get(k3));
-        check("Vector2DAntTreeMap get existing same-x smaller-y value", ant4, map1.get(k4));
-        check("Vector2DAntTreeMap get existing same-x larger-y value", ant5, map1.get(k5));
-        check("Vector2DAntTreeMap get missing key", null, map1.get(new Vector2D(100.0, 100.0)));
+        Physical sameDataDifferentObject = new Nest(new Vector2D(2.0, 2.0), 1.0);
+        check("PhysicalKDTree contains uses identity, not equality", false, tree1.contains(sameDataDifferentObject));
 
-        check("Vector2DAntTreeMap containsKey existing", true, map1.containsKey(k3));
-        check("Vector2DAntTreeMap containsKey missing", false, map1.containsKey(new Vector2D(4.0, 4.0)));
+        PhysicalDoublyLinkedRingList q1 = tree1.rangeQuery(new Vector2D(2.0, 2.0), 0.0);
+        check("PhysicalKDTree rangeQuery radius 0 size after individual adds", 1, q1.size());
+        checkPhysical("PhysicalKDTree rangeQuery radius 0 result after individual adds", t1, q1.get(0));
 
-        check("Vector2DAntTreeMap containsValue existing deep node", true, map1.containsValue(ant5));
-        check("Vector2DAntTreeMap containsValue missing", false, map1.containsValue(new Ant(world)));
+        PhysicalDoublyLinkedRingList q2 = tree1.rangeQuery(new Vector2D(2.0, 2.0), 10.0);
+        check("PhysicalKDTree rangeQuery large radius size after individual adds", 3, q2.size());
+        check("PhysicalKDTree rangeQuery large radius contains t1", true, containsPhysical(q2, t1));
+        check("PhysicalKDTree rangeQuery large radius contains t2", true, containsPhysical(q2, t2));
+        check("PhysicalKDTree rangeQuery large radius contains t3", true, containsPhysical(q2, t3));
 
-        Ant oldValue = map1.put(k1, ant3);
-        check("Vector2DAntTreeMap put existing key returns old value", ant1, oldValue);
-        check("Vector2DAntTreeMap size unchanged after replace", 5, map1.size());
-        check("Vector2DAntTreeMap replaced value accessible", ant3, map1.get(k1));
+        tree1.add(new Physical[]{t4, t5});
+        check("PhysicalKDTree size after add(array)", 5, tree1.size());
+        check("PhysicalKDTree max radius after add(array)", 2.5, tree1.getMaxStoredRadius());
 
-        Vector2DSinglyLinkedList keysList = map1.keys();
-        check("Vector2DAntTreeMap keys size", 5, keysList.size());
+        check("PhysicalKDTree contains t4 after add(array)", true, tree1.contains(t4));
+        check("PhysicalKDTree contains t5 after add(array)", true, tree1.contains(t5));
 
-        // Expected lexicographic order:
-        // (1,5), (2,1), (2,2), (2,3), (3,1)
-        checkVector("Vector2DAntTreeMap keys order index 0", k2, keysList.get(0));
-        checkVector("Vector2DAntTreeMap keys order index 1", k4, keysList.get(1));
-        checkVector("Vector2DAntTreeMap keys order index 2", k1, keysList.get(2));
-        checkVector("Vector2DAntTreeMap keys order index 3", k5, keysList.get(3));
-        checkVector("Vector2DAntTreeMap keys order index 4", k3, keysList.get(4));
+        Physical missing = new FoodSource(new Vector2D(100.0, 100.0), 1.0);
+        check("PhysicalKDTree contains missing object", false, tree1.contains(missing));
 
-        Ant[] values = map1.values();
-        check("Vector2DAntTreeMap values length", 5, values.length);
-        check("Vector2DAntTreeMap values contains ant2", true, containsAnt(values, ant2));
-        check("Vector2DAntTreeMap values contains ant3", true, containsAnt(values, ant3));
-        check("Vector2DAntTreeMap values contains ant4", true, containsAnt(values, ant4));
-        check("Vector2DAntTreeMap values contains ant5", true, containsAnt(values, ant5));
+        PhysicalDoublyLinkedRingList q3 = tree1.rangeQuery(new Vector2D(2.0, 2.0), 1.1);
+        check("PhysicalKDTree rangeQuery small radius size", 3, q3.size());
+        check("PhysicalKDTree rangeQuery small radius contains t1", true, containsPhysical(q3, t1));
+        check("PhysicalKDTree rangeQuery small radius contains t4", true, containsPhysical(q3, t4));
+        check("PhysicalKDTree rangeQuery small radius contains t5", true, containsPhysical(q3, t5));
+
+        PhysicalDoublyLinkedRingList q4 = tree1.rangeQuery(new Vector2D(2.0, 2.0), 10.0);
+        check("PhysicalKDTree rangeQuery large radius size after all adds", 5, q4.size());
+        check("PhysicalKDTree rangeQuery large radius contains t2", true, containsPhysical(q4, t2));
+        check("PhysicalKDTree rangeQuery large radius contains t3", true, containsPhysical(q4, t3));
+        check("PhysicalKDTree rangeQuery large radius contains t4", true, containsPhysical(q4, t4));
+        check("PhysicalKDTree rangeQuery large radius contains t5", true, containsPhysical(q4, t5));
+
+        PhysicalDoublyLinkedRingList q5 = tree1.rangeQuery(1.5, 1.5, 2.5, 3.5);
+        check("PhysicalKDTree rectangle range size", 2, q5.size());
+        check("PhysicalKDTree rectangle range contains t1", true, containsPhysical(q5, t1));
+        check("PhysicalKDTree rectangle range contains t5", true, containsPhysical(q5, t5));
+
+        PhysicalDoublyLinkedRingList q6 = tree1.intersectingAt(new Vector2D(2.0, 2.0), 0.0);
+        check("PhysicalKDTree intersectingAt exact center contains t1", true, containsPhysical(q6, t1));
+        check("PhysicalKDTree intersectingAt exact center contains t4", true, containsPhysical(q6, t4));
+        check("PhysicalKDTree intersectingAt exact center contains t5", true, containsPhysical(q6, t5));
+
+        PhysicalDoublyLinkedRingList q7 = tree1.intersectingAt(new Vector2D(2.0, 2.0), 0.25);
+        check("PhysicalKDTree intersectingAt small radius contains t1", true, containsPhysical(q7, t1));
+        check("PhysicalKDTree intersectingAt small radius contains t4", true, containsPhysical(q7, t4));
+        check("PhysicalKDTree intersectingAt small radius contains t5", true, containsPhysical(q7, t5));
+
+        tree1.clear();
+        check("PhysicalKDTree size after clear", 0, tree1.size());
+        check("PhysicalKDTree isEmpty after clear", true, tree1.isEmpty());
+        check("PhysicalKDTree max radius after clear", 0.0, tree1.getMaxStoredRadius());
+
+        check("PhysicalKDTree contains t1 after clear", false, tree1.contains(t1));
+        check("PhysicalKDTree contains t5 after clear", false, tree1.contains(t5));
+
+        PhysicalKDTreeSet tree2 = new PhysicalKDTreeSet(data);
+        check("PhysicalKDTree constructor with array size", 5, tree2.size());
+        check("PhysicalKDTree constructor with array isEmpty", false, tree2.isEmpty());
+        check("PhysicalKDTree constructor with array max radius", 2.5, tree2.getMaxStoredRadius());
+
+        check("PhysicalKDTree constructor tree contains t1", true, tree2.contains(t1));
+        check("PhysicalKDTree constructor tree contains t2", true, tree2.contains(t2));
+        check("PhysicalKDTree constructor tree contains t3", true, tree2.contains(t3));
+        check("PhysicalKDTree constructor tree contains t4", true, tree2.contains(t4));
+        check("PhysicalKDTree constructor tree contains t5", true, tree2.contains(t5));
+
+        Physical sameDataDifferentObject2 = new Nest(new Vector2D(2.0, 3.0), 2.5);
+        check("PhysicalKDTree constructor tree contains uses identity, not equality", false,
+                tree2.contains(sameDataDifferentObject2));
+
+        PhysicalDoublyLinkedRingList q8 = tree2.rangeQuery(new Vector2D(2.0, 2.0), 10.0);
+        check("PhysicalKDTree constructor tree rangeQuery size", 5, q8.size());
+        check("PhysicalKDTree constructor tree contains t1", true, containsPhysical(q8, t1));
+        check("PhysicalKDTree constructor tree contains t2", true, containsPhysical(q8, t2));
+        check("PhysicalKDTree constructor tree contains t3", true, containsPhysical(q8, t3));
+        check("PhysicalKDTree constructor tree contains t4", true, containsPhysical(q8, t4));
+        check("PhysicalKDTree constructor tree contains t5", true, containsPhysical(q8, t5));
 
         System.out.println("\n===============================================");
         System.out.println("ALL TESTS COMPLETED");
         System.out.println("===============================================");
     }
 
-    private static boolean containsAnt(Ant[] values, Ant target) {
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] == target) {
+    private static boolean containsPhysical(PhysicalDoublyLinkedRingList values, Physical target) {
+        for (int i = 0; i < values.size(); i++) {
+            if (values.get(i) == target) {
                 return true;
             }
         }
         return false;
     }
 
-    private static void checkVector(String testName, Vector2D expected, Vector2D actual) {
-        boolean ok = expected == null && actual == null
-                || expected != null && actual != null
-                && Double.compare(expected.getX(), actual.getX()) == 0
-                && Double.compare(expected.getY(), actual.getY()) == 0;
+    private static void checkPhysical(String testName, Physical expected, Physical actual) {
+        boolean ok = expected == actual;
 
         if (ok) {
             ok();
         } else {
-            fail(testName,
-                    expected == null ? "null" : "(" + expected.getX() + ", " + expected.getY() + ")",
-                    actual == null ? "null" : "(" + actual.getX() + ", " + actual.getY() + ")");
+            fail(testName, physicalToString(expected), physicalToString(actual));
         }
+    }
+
+    private static String physicalToString(Physical p) {
+        if (p == null) {
+            return "null";
+        }
+        return p.getClass().getSimpleName()
+                + "@(" + p.getPosition().getX() + ", " + p.getPosition().getY() + "), r=" + p.getRadius();
     }
 
     private static void check(String testName, Object expected, Object actual) {

@@ -126,14 +126,4 @@ public class Vector2D {
         }
         return scale(1.0 / len);
     }
-
-    /**
-     * Converts this vector into an independent array representation.
-     *
-     * @return a new array containing {@code [x, y]}
-     */
-    public double[] toArray() {
-
-        return new double[]{x, y};
-    }
 }

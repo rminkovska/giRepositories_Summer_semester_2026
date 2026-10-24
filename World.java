@@ -1,143 +1,172 @@
 /**
- * Simulation world containing nest and food location.
+ * Simulation world containing nest, food location, ants and obstacles.
  *
  * <p>The world is represented as a two-dimensional coordinate system.
- * Ants can check whether a position corresponds to the nest or
- * the food source.</p>
+ * It provides access to all physical objects currently present in the world
+ * and applies the boundary rule to states.</p>
  */
 public class World {
 
-    // TODO: all variables and additional methods are private.
+    private final int width;
+    private final int height;
+    private final Nest nest;
+    private final FoodSource food;
+    private final Ant[] ants;
+    private final Obstacle[] obstacles;
 
     /**
-     * Creates a new `World` object with the specified width, height and positions of
-     * ant nest and food source. Valid positions range from `(0.0,0.0)` to `(width, height)`.
+     * Creates a new {@code World} object with the specified width, height,
+     * nest, food source, ant array and obstacle array.
      *
      * @param width the width of the world; {@code width > 0}
      * @param height the height of the world; {@code height > 0}
-     * @param nest the position of the ant nest; {@code nest != null}, coordinates have to be within world boundaries
-     * @param food the position of the food source; {@code food != null}, coordinates have to be within world boundaries
-     * @param ants the array used to store the ants of this world.
-     * The length of this array determines the number of ants that will live in this world;
-     * {@code ants != null && ants.length > 0}
+     * @param nest the nest; {@code nest != null}
+     * @param food the food source; {@code food != null}
+     * @param ants the array used to store the ants of this world;
+     *             {@code ants != null && ants.length > 0}
+     * @param obstacles the obstacles of this world; {@code obstacles != null}
      */
-    int width;
-    int height;
-    Vector2D nest;
-    Vector2D food;
-    Ant[] ants;
+    public World(int width, int height, Nest nest, FoodSource food, Ant[] ants, Obstacle[] obstacles) {
 
-    public World(int width, int height, Vector2D nest, Vector2D food, Ant[] ants) {
-
-        //TODO: implement constructor.
         this.width = width;
         this.height = height;
         this.nest = nest;
         this.food = food;
         this.ants = ants;
+        this.obstacles = obstacles;
     }
 
     /**
-     * Return the position of the nest.
+     * Returns the position of the nest object.
      *
-     * @return the position of the nest.
+     * @return the nest
      */
-    public Vector2D getNest() {
+    public Nest getNest() {
+
+        return nest;
+    }
+
+    /**
+     * Returns the food source object.
+     *
+     * @return the food source
+     */
+    public FoodSource getFood() {
+
+        return food;
+    }
+
+    /**
+     * Returns the ant array used by this world.
+     *
+     * @return the ants
+     */
+    public Ant[] getAnts() {
+
+        return ants;
+    }
+
+    /**
+     * Returns all physical objects currently present in the world.
+     *
+     * <p>The returned array contains
+     * <ul>
+     *   <li>the nest,</li>
+     *   <li>the food source,</li>
+     *   <li>all non-{@code null} obstacles, and</li>
+     *   <li>all non-{@code null} ants.</li>
+     * </ul>
+     * Each non-{@code null} physical object appears exactly once.</p>
+     *
+     * <p>The returned array is independent of the internal representation of
+     * this world. Changes to the returned array do not affect {@code this}.</p>
+     *
+     * @return an array containing all physical objects in this world
+     */
+    public Physical[] getPhysicals() {
 
         //TODO: implement method.
-        return new Vector2D(nest.getX(), nest.getY());
+        int i=0;
+        int size = 2; //beginning with 2 for nest and food
+        for (Obstacle obstacle : obstacles) {
+            if(obstacle!=null) size++;
+        }
+        for(Ant ant : ants){
+            if(ant!=null) size++;
+        }
+        Physical[] physicals = new Physical[size];
+
+        physicals[i++]= nest;
+        physicals[i++]= food;
+
+        for(Obstacle obstacle : obstacles) {
+            if(obstacle!=null){
+                physicals[i++]= (Physical) obstacle;
+            }
+        }
+        for(Ant ant : ants) {
+            if(ant!=null){
+                physicals[i++]= ant;
+            }
+        }
+
+        return physicals;
     }
 
     /**
-     * Return the position of the food source.
+     * Applies the world's boundary rule to the given state.
      *
-     * @return the position of the food source.
-     */
-    public Vector2D getFood() {
-
-        //TODO: implement method.
-        return new Vector2D(food.getX(), food.getY());
-    }
-
-    /**
-     * Applies the world's boundary rule to the given state as follows:
-     *
-     * <p>
-     * If the position lies outside the world, it results in a new position corresponding to the
-     * closest point on the boundary of the world and a velocity vector that is the negative of the
-     * current velocity vector.
-     * <p>
-     * You are free to refine the specification.
-     * </p>
+     * <p>If the position lies outside the world, it results in a new position
+     * corresponding to the closest point on the boundary of the world and
+     * a velocity vector whose affected component is inverted.</p>
      *
      * @param s the state to be adjusted; {@code s != null}
      * @return a new {@link State} whose position lies inside the world
      */
     public State enforceBoundary(State s) {
 
-        //TODO: implement method.
-        double x = s.getPosition().getX();
-        double y = s.getPosition().getY();
-        double vx = s.getVelocity().getX();
-        double vy = s.getVelocity().getY();
+        Vector2D p = s.getPosition();
+        Vector2D v = s.getVelocity();
+
+        double x = p.getX();
+        double y = p.getY();
+
+        boolean bouncedX = false;
+        boolean bouncedY = false;
+
         if (x < 0) {
-            vx *= -1;
             x = 0;
+            bouncedX = true;
+        } else if (x > width) {
+            x = width;
+            bouncedX = true;
         }
-        if (x > this.width) {
-            vx *= -1;
-            x = this.width;
-        }
+
         if (y < 0) {
-            vy *= -1;
             y = 0;
-        }
-        if (y > this.height) {
-            vy *= -1;
-            y = this.height;
-        }
-        Vector2D pos = new Vector2D(x, y);
-        Vector2D vel = new Vector2D(vx, vy);
-        return new State(pos, vel);
-    }
-
-    /**
-     * Returns the current distribution of ants in the world, represented by a
-     * map with as many entries as there are ants in the world.
-     *
-     * <p>
-     * The returned association maps positions in the world to the ants
-     * currently located at those positions. Each key represents a
-     * {@link Vector2D} position and the associated value is the
-     * {@link Ant} located at that position.
-     * </p>
-     *
-     * <p>
-     * The returned structure contains one entry for every ant currently
-     * present in the world.
-     * </p>
-     *
-     * <p>
-     * {@code this} is not changed by this method.
-     * </p>
-     *
-     * @return a {@link Vector2DAntTreeMap} representing the mapping
-     * from positions to ants in the world
-     */
-    public Vector2DAntTreeMap asMap() {
-
-        //TODO: implement method.
-        Vector2DAntTreeMap map = new Vector2DAntTreeMap();
-
-        Vector2D[] position = new Vector2D[ants.length];
-        Ant[] value = new Ant[ants.length];
-
-        for (int i = 0; i < ants.length; i++) {
-            position[i] = ants[i].getPosition();
-            value[i] = ants[i];
-            map.put(position[i], value[i]);
+            bouncedY = true;
+        } else if (y > height) {
+            y = height;
+            bouncedY = true;
         }
 
-        return map;
+        double vx = v.getX();
+        double vy = v.getY();
+
+        if (bouncedX) {
+            vx = -vx;
+        }
+        if (bouncedY) {
+            vy = -vy;
+        }
+
+        Vector2D newVelocity = new Vector2D(vx, vy);
+        if (newVelocity.isZero()) {
+            newVelocity = new Vector2D(1, 0);
+        } else {
+            newVelocity = newVelocity.normalize();
+        }
+
+        return new State(new Vector2D(x, y), newVelocity);
     }
 }
