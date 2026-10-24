@@ -18,8 +18,9 @@ public class PhysicalPhysicalTreeMapNodeEmpty implements PhysicalPhysicalTreeMap
      * {@inheritDoc}
      */
     @Override
-    public PhysicalPhysicalTreeMapNode put(Physical key, Physical value, PhysicalComparator comparator, Physical[] oldValueBox) {
+    public PhysicalPhysicalTreeMapNode put(Physical key, Physical value, PhysicalComparator comparator, Physical[] oldValueBox, boolean[] insertedBox) {
 
+        insertedBox[0] = true;
         return new PhysicalPhysicalTreeMapNodeNonEmpty(key, value);
     }
 
@@ -37,6 +38,22 @@ public class PhysicalPhysicalTreeMapNodeEmpty implements PhysicalPhysicalTreeMap
     @Override
     public PhysicalPhysicalTreeMapNode getRight() {
         return EMPTY;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Physical getKey() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Physical getValue() {
+        return null;
     }
 
     /**

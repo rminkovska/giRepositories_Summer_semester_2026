@@ -18,7 +18,7 @@ public class PhysicalPhysicalTreeMapNodeNonEmpty implements PhysicalPhysicalTree
      * Creates a new node with the specified key-value pair.
      *
      * @param key the key stored in this node; {@code key != null}
-     * @param value the associated value; {@code value != null}
+     * @param value the associated value
      */
     public PhysicalPhysicalTreeMapNodeNonEmpty(Physical key, Physical value) {
 
@@ -26,7 +26,6 @@ public class PhysicalPhysicalTreeMapNodeNonEmpty implements PhysicalPhysicalTree
         this.value = value;
         left = right = PhysicalPhysicalTreeMapNodeEmpty.EMPTY;
     }
-
 
     /**
      * {@inheritDoc}
@@ -45,25 +44,30 @@ public class PhysicalPhysicalTreeMapNodeNonEmpty implements PhysicalPhysicalTree
     }
 
     /**
-     * Inserts a key-value pair into this subtree or updates an existing entry unsing the specified comparator.
-     *
-     * <p>If a key object equal to the specified key is already stored in this subtree,
-     * its associated value is replaced by
-     * {@code value}, and the previous value is returned.</p>
-     *
-     * <p>Otherwise, a new node is inserted according to the comparator-defined
-     * search tree order.</p>
-     *
-     * @param key the key to insert; {@code key != null}
-     * @param value the associated value; {@code value != null}
-     * @return the previously associated value if the same key object already existed,
-     *         otherwise {@code null}
+     * {@inheritDoc}
      */
     @Override
-    public PhysicalPhysicalTreeMapNode put(Physical key, Physical value, PhysicalComparator comparator, Physical[] oldValueBox) {
+    public Physical getKey() {
+        return key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Physical getValue() {
+        return value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PhysicalPhysicalTreeMapNode put(Physical key, Physical value, PhysicalComparator comparator, Physical[] oldValueBox, boolean[] insertedBox) {
 
         if (this.key.equals(key)) {
             oldValueBox[0] = this.value;
+            insertedBox[0] = false;
             this.value = value;
             return this;
         }
@@ -71,19 +75,15 @@ public class PhysicalPhysicalTreeMapNodeNonEmpty implements PhysicalPhysicalTree
         int cmp = comparator.compare(key, this.key);
 
         if (cmp < 0) {
-            left = left.put(key, value, comparator, oldValueBox);
+            left = left.put(key, value, comparator, oldValueBox, insertedBox);
         } else {
-            right = right.put(key, value, comparator, oldValueBox);
+            right = right.put(key, value, comparator, oldValueBox, insertedBox);
         }
         return this;
     }
 
     /**
-     * Returns the value associated with the given key object.
-     *
-     * @param key the key to search for; {@code key != null}
-     * @return the associated value if the same key object is found,
-     *         otherwise {@code null}
+     * {@inheritDoc}
      */
     @Override
     public Physical get(Physical key, PhysicalComparator comparator) {
@@ -102,10 +102,7 @@ public class PhysicalPhysicalTreeMapNodeNonEmpty implements PhysicalPhysicalTree
     }
 
     /**
-     * Returns whether this subtree contains a key equal to the specified key object.
-     *
-     * @param key the key to search for; {@code key != null}
-     * @return {@code true} iff the same key object occurs in this subtree
+     * {@inheritDoc}
      */
     @Override
     public boolean containsKey(Physical key, PhysicalComparator comparator) {
@@ -124,15 +121,12 @@ public class PhysicalPhysicalTreeMapNodeNonEmpty implements PhysicalPhysicalTree
     }
 
     /**
-     * Returns whether the given physical object is equal to a value in this subtree.
-     *
-     * @param value the value to search for; {@code value != null}
-     * @return {@code true} iff the same value object occurs in this subtree
+     * {@inheritDoc}
      */
     @Override
     public boolean containsValue(Physical value) {
 
-        if (this.value.equals(value)) {
+        if (this.value == null ? value == null : this.value.equals(value)) {
             return true;
         }
 
@@ -140,9 +134,7 @@ public class PhysicalPhysicalTreeMapNodeNonEmpty implements PhysicalPhysicalTree
     }
 
     /**
-     * Adds all keys to the given set.
-     *
-     * @param result the set to which keys are added; {@code result != null}
+     * {@inheritDoc}
      */
     @Override
     public void fillKeys(PhysicalSet result) {
@@ -153,28 +145,26 @@ public class PhysicalPhysicalTreeMapNodeNonEmpty implements PhysicalPhysicalTree
     }
 
     /**
-     * Adds all values to the given set.
-     *
-     * @param result the set to which values are added; {@code result != null}
+     * {@inheritDoc}
      */
     @Override
     public void fillValues(PhysicalSet result) {
 
-        result.add(value);
+        if (value != null) {
+            result.add(value);
+        }
+
         left.fillValues(result);
         right.fillValues(result);
     }
 
     /**
-     * Returns a string representation of this subtree using the specified indentation.
-     *
-     * @param indent the indentation prefix for this node
-     * @return a string representation of this subtree
+     * {@inheritDoc}
      */
     @Override
     public String toIndentedString(String indent) {
 
-        String result = indent + key.toString() + " -> " + value.toString() + "\n";
+        String result = indent + key.toString() + " -> " + value + "\n";
 
         result += left.toIndentedString(indent + "  ");
         result += right.toIndentedString(indent + "  ");

@@ -5,26 +5,37 @@
  * Keys are compared using {@code equals}; hash positions are computed
  * using {@code hashCode}.</p>
  *
- * <p>This map does not store {@code null} keys or {@code null} values.</p>
+ * <p>This map does not store {@code null} keys.</p>
  */
-public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIterable {
+public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap {
 
-    private Physical[] keys;
+    // TODO: edit according to `angabe.md`.
+
+    private Physical[][] keysBox = new Physical[1][];
     private Physical[] values;
     private int size;
 
-    //TODO: override `equals` and `hashCode`.
-    //TODO: iterator()
+    /**
+     * Shared mutable modification counter used to detect concurrent structural
+     * modifications during iteration.
+     * <p>
+     * The counter value is incremented whenever the structure of this map changes.
+     * Wrapping the counter inside a single-element array allows the counter to be
+     * shared by reference between the map, its views, and active iterators.
+     * </p>
+     */
+    private int[] modCounterBox = new int[1];
+
+    //TODO: edit according to `angabe.md`: update modCounterBox where necessary.
 
     /**
      * Creates an empty map.
      */
     public PhysicalPhysicalHashMap() {
 
-        keys = new Physical[64];
+        keysBox[0] = new Physical[64];
         values = new Physical[64];
         size = 0;
-
     }
 
     /**
@@ -35,17 +46,19 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIte
 
         int index = find(key);
 
-        if (keys[index] != null) {
+        if (keysBox[0][index] != null) {
             Physical old = values[index];
             values[index] = value;
             return old;
         }
 
-        keys[index] = key;
+        keysBox[0][index] = key;
         values[index] = value;
         size++;
 
-        if (size * 4 >= keys.length * 3) {
+        modCounterBox[0]++;
+
+        if (size * 4 >= keysBox[0].length * 3) {
             grow();
         }
 
@@ -59,7 +72,7 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIte
     public Physical get(Physical key) {
 
         int index = find(key);
-        return keys[index] == null ? null : values[index];
+        return keysBox[0][index] == null ? null : values[index];
     }
 
     /**
@@ -69,7 +82,7 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIte
     public boolean containsKey(Physical key) {
 
         int index = find(key);
-        return keys[index] != null;
+        return keysBox[0][index] != null;
     }
 
     @Override
@@ -93,35 +106,21 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIte
     @Override
     public void clear() {
 
-        keys = new Physical[64];
+        keysBox[0] = new Physical[64];
         values = new Physical[64];
         size = 0;
+
+        modCounterBox[0]++;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PhysicalSet keySet() {
+    public PhysicalSet keySetView() {
 
         //TODO: implement method.
-        PhysicalTreeSet set = new PhysicalTreeSet();
-        PhysicalIterator iter = this.iterator();
-        while (iter.hasNext()) {
-            set.add(iter.next());
-        }
-
-        return set;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PhysicalIterator iterator() {
-
-        //TODO: implement method.
-        return new PhysicalPhysicalHashMapIterator(keys);
+        return new PhysicalPhysicalHashMapSetView(this, keysBox, modCounterBox);
     }
 
     /**
@@ -136,10 +135,10 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIte
      */
     private int find(Physical key) {
 
-        int index = key.hashCode() & (keys.length - 1);
+        int index = key.hashCode() & (keysBox[0].length - 1);
 
-        while (keys[index] != null && !keys[index].equals(key)) {
-            index = (index + 1) & (keys.length - 1);
+        while (keysBox[0][index] != null && !keysBox[0][index].equals(key)) {
+            index = (index + 1) & (keysBox[0].length - 1);
         }
 
         return index;
@@ -153,10 +152,10 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIte
      */
     private void grow() {
 
-        Physical[] oldKeys = keys;
+        Physical[] oldKeys = keysBox[0];
         Physical[] oldValues = values;
 
-        keys = new Physical[oldKeys.length * 2];
+        keysBox[0] = new Physical[oldKeys.length * 2];
         values = new Physical[oldValues.length * 2];
         size = 0;
 
@@ -165,49 +164,5 @@ public class PhysicalPhysicalHashMap implements PhysicalPhysicalMap, PhysicalIte
                 put(oldKeys[i], oldValues[i]);
             }
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (!(o instanceof PhysicalPhysicalMap)) return false;
-
-        PhysicalPhysicalMap other = (PhysicalPhysicalMap) o;
-
-        if (this.size() != other.size()) return false;
-
-        PhysicalIterator iter = this.iterator();
-
-        while (iter.hasNext()) {
-            Physical key = iter.next();
-
-            if (!other.containsKey(key)) return false;
-
-            Physical thisValue = this.get(key);
-            Physical otherValue = other.get(key);
-
-            if (!thisValue.equals(otherValue)) return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        PhysicalIterator iter = this.iterator();
-
-        while (iter.hasNext()) {
-            Physical key = iter.next();
-            Physical value = this.get(key);
-
-            int keyHash = (key == null) ? 0 : key.hashCode();
-            int valueHash = (value == null) ? 0 : value.hashCode();
-
-            hash += (keyHash ^ valueHash);
-        }
-
-        return hash;
     }
 }

@@ -37,31 +37,57 @@ public interface PhysicalPhysicalTreeMapNode {
     PhysicalPhysicalTreeMapNode getRight();
 
     /**
+     * Returns the key stored in this node.
+     *
+     * <p>If this node represents an empty subtree,
+     * {@code null} is returned.</p>
+     *
+     * @return the stored key, or {@code null} if this node is empty
+     */
+    Physical getKey();
+
+    /**
+     * Returns the value associated with the key stored in this node.
+     *
+     * <p>If this node represents an empty subtree,
+     * {@code null} is returned.</p>
+     *
+     * @return the associated value, or {@code null} if this node is empty
+     */
+    Physical getValue();
+
+    /**
      * Inserts the specified key-value association into this subtree.
      *
      * <p>If this subtree already contains a key equal to {@code key},
      * the associated value is replaced by {@code value}. In this case,
      * the previously associated value is written into
-     * {@code oldValueBox[0]}.</p>
+     * {@code oldValueBox[0]} and {@code insertedBox[0]} is set to
+     * {@code false}.</p>
      *
      * <p>Otherwise, a new node is inserted according to the ordering
-     * defined by {@code comparator}. In this case,
-     * {@code oldValueBox} remains unchanged.</p>
+     * defined by {@code comparator}. In this case, {@code oldValueBox}
+     * remains unchanged and {@code insertedBox[0]} is set to
+     * {@code true}.</p>
      *
      * @param key the key to insert; {@code key != null}
-     * @param value the associated value; {@code value != null}
+     * @param value the associated value; may be {@code null}
      * @param comparator the comparator defining the tree order;
      *                   {@code comparator != null}
      * @param oldValueBox an array of length at least 1 used to return
      *                    the previously associated value, if such a value
      *                    existed; {@code oldValueBox != null}
+     * @param insertedBox an array of length at least 1 used to indicate
+     *                    whether a new association was inserted;
+     *                    {@code insertedBox != null}
      * @return the root node of the subtree after insertion
      */
     PhysicalPhysicalTreeMapNode put(
             Physical key,
             Physical value,
             PhysicalComparator comparator,
-            Physical[] oldValueBox
+            Physical[] oldValueBox,
+            boolean[] insertedBox
     );
 
     /**
@@ -88,7 +114,7 @@ public interface PhysicalPhysicalTreeMapNode {
     /**
      * Returns whether this subtree contains a value equal to the specified value.
      *
-     * @param value the value to search for; {@code value != null}
+     * @param value the value to search for
      * @return {@code true} iff this subtree contains an equal value
      */
     boolean containsValue(Physical value);
@@ -103,10 +129,9 @@ public interface PhysicalPhysicalTreeMapNode {
 
 
     /**
-     * Adds all values stored in this subtree to the specified set.
+     * Adds all non-null values to the given set. Null values are skipped.
      *
-     * @param result the set to which values are added;
-     *               {@code result != null}
+     * @param result the set to which values are added; {@code result != null}
      */
     void fillValues(PhysicalSet result);
 
